@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Treasurer Main Dashboard | Mothers' Union</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf26",
+                        "accent-gold": "#d4af37",
+                        "soft-red": "#ef4444",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112112",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">body {
+    font-family: "Lexend", sans-serif
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.chart-container {
+    background-image: linear-gradient(to right, transparent 0%, transparent 100%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuAuFmT9SJxiz30RRzlyO9l0v9kqXoUvb8fKyGpTwutmpo51qmjevLDCYIzZkjynaQ0OgOi2V6alS6IQVpfsCX62wJ5oyBLPriFvCthXXY2f-VdxbZblXOi1nrr1yP4m_Fy0cUqVDvBYlhhlyzDOSFDKc1GdUJTzzuo6pPJx-LNRhSaxqy67lGlbZXs9kAo1l168uywLxCtihwQ-n36iBw1Zl1dbfn2ot2HXYcWl4QN_BKZ9MV3GvuItJ1O_pF3xsX9QA-ez-FUwxQ);
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 100% 60px
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111812] dark:text-white">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#111812] dark:text-white">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined text-4xl">account_balance</span>
+</div>
+<h2 class="text-[#111812] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Mothers' Union Finance</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="flex items-center gap-8 mr-4">
+<!-- Dashboard Link -->
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary pb-1" href="dashboard.html">Dashboard</a>
+<!-- Records Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">Records</a>
+<!-- Members Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="members.html">Members</a>
+<!-- Transaction Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="transactions.html">Transaction</a>
+<!-- Reports Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="reports.html">Reports</a>
+<!-- Settings Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="settings.html">Settings</a>
+</nav>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Portrait of a church official" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXhkxFzOC7Fsx5ywMMY61lJP1qoGcHThMmhS_K2OhiRPPj939p-Lotjum-CgjuChTAPJ1lRjSxT_fyQO168u2hLpyBRP42I07By-z25DuxW7YmCjTnPe2Sn2pFFlkRuMc5CH1C6IVkvY_2bobgOeplkt4Yc5iQNB4vlfA4N1e0igeEqpsXf9gYzz4EeX9sXp62INn3bbc14kPmvBvPPMFC1EwCcqj92F0_4aUw6Cpb_E4YoAhLa0OeA9i7kkaRAKRPj12rWZb8_Q");'></div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto py-8 px-6">
+<div class="mb-10">
+<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Good Morning, Naomi</h1>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-lg font-normal leading-normal">Today is Thursday, 12th October 2023</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-accent-gold text-white p-8 rounded-xl shadow-lg border border-accent-gold/20 flex flex-col justify-between">
+<div>
+<p class="text-white/80 text-sm font-bold uppercase tracking-wider mb-1">Current Balance</p>
+<p class="text-4xl font-black">KSH420,000</p>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-sm">Total Available Funds</span>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
+<div>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Income This Month</p>
+<p class="text-primary text-4xl font-black">ksh250,000</p>
+</div>
+<div class="mt-4 flex items-center gap-2 text-primary font-medium">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="text-sm">+12% from last month</span>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
+<div>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Expenses This Month</p>
+<p class="text-soft-red dark:text-[#ff6b6b] text-4xl font-black">ksh30,000</p>
+</div>
+<div class="mt-4 flex items-center gap-2 text-accent-gold font-medium">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm">8 Pending Approvals</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold">Recent Transactions</h3>
+<a class="text-primary text-sm font-bold hover:underline" href="Transactions.html">View All</a>
+</div>
+<div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] overflow-hidden shadow-sm">
+<div class="divide-y divide-[#dce5dc] dark:divide-[#2a3a2a]">
+<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<div>
+<p class="font-bold">Sunday Collection</p>
+<p class="text-xs text-[#638866]">Tithes &amp; Offerings • 12 Oct 2024</p>
+</div>
+</div>
+<p class="font-black text-primary">+850,000</p>
+</div>
+<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg">
+<span class="material-symbols-outlined">remove_circle</span>
+</div>
+<div>
+<p class="font-bold">Refreshments for Outreach</p>
+<p class="text-xs text-[#638866]">Community Event • 10 Oct 2025</p>
+</div>
+</div>
+<p class="font-black text-accent-gold">-150,000</p>
+</div>
+<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<div>
+<p class="font-bold">Monthly Member Dues</p>
+<p class="text-xs text-[#638866]">Membership • 08 Oct 2024</p>
+</div>
+</div>
+<p class="font-black text-primary">200,000</p>
+</div>
+<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg">
+<span class="material-symbols-outlined">remove_circle</span>
+</div>
+<div>
+<p class="font-bold">Electricity Bill</p>
+<p class="text-xs text-[#638866]">Utilities • 05 Oct 2026</p>
+</div>
+</div>
+<p class="font-black text-accent-gold">-85,500</p>
+</div>
+<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<div>
+<p class="font-bold">Donation from Patron</p>
+<p class="text-xs text-[#638866]">Grants • 02 Oct 2026</p>
+</div>
+</div>
+<p class="font-black text-primary">200,000</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-8">
+<div>
+<h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+<div class="flex flex-col gap-3">
+<!-- Add New Record Button with Navigation -->
+<a href="index.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-20 bg-primary text-white text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-3xl">add_card</span>
+<span>Add New Record</span>
+</a>
+<!-- Register Member Button with Navigation -->
+<a href="members.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-20 bg-[#111812] dark:bg-white dark:text-[#111812] text-white text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined text-3xl">person_add</span>
+<span>Register Member</span>
+</a>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2a1a] p-6 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col h-full">
+<h3 class="text-base font-bold mb-1">Weekly Giving Trend</h3>
+<p class="text-xs text-[#638866] mb-4">Pulse of church finances</p>
+<div class="chart-container flex-grow min-h-[120px] flex items-end justify-between px-2">
+<div class="text-[10px] text-[#638866]">Mon</div>
+<div class="text-[10px] text-[#638866]">Tue</div>
+<div class="text-[10px] text-[#638866]">Wed</div>
+<div class="text-[10px] text-[#638866]">Thu</div>
+<div class="text-[10px] text-[#638866]">Fri</div>
+<div class="text-[10px] text-[#638866]">Sat</div>
+<div class="text-[10px] text-[#638866]">Sun</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-12 py-8 border-t border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a]">
+<div class="max-w-[1200px] mx-auto px-6 text-center">
+<p class="text-[#638866] text-sm">© 2026 Mothers' Union Anglican Diocese. All financial data is encrypted and secure.</p>
+</div>
+</footer>
+</body>
+</html>

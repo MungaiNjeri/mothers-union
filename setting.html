@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>App Settings - Mothers' Union Treasurer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf26",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112112",
+                        "gold": "#d4af37"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-[#111812] dark:text-white">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e0e7e1] dark:border-[#2a3a2c] bg-white dark:bg-[#1a2e1b] px-10 py-3">
+<div class="flex items-center gap-4 text-[#111812] dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Mothers' Union Treasurer</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<!-- Dashboard Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="dashboard.html">Dashboard</a>
+
+<!-- Record New Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">Record New</a>
+
+<!-- Transactions Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="transactions.html">Transactions</a>
+
+<!-- Reports Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="reports.html">Reports</a>
+
+<!-- Members Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="members.html">Members</a>
+
+
+<!-- Settings Link (Current Page) -->
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary pb-1" href="setting.html">Settings</a>
+
+<!-- Help Center Link -->
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="help-center.html">Help Center</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f4f1] dark:bg-[#2a3a2c] text-[#111812] dark:text-white">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile picture placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQDO2qqJ6Vh6z-e8h0b4Fs2o7FIyYZ5dGHlgk-ioChT0Xy74gd5ofMEaQ-xY62xn4GyBjYU2S_nuB-FGZKbDDLNOiV-h0jFqmF8dPKPYX-RB4iCUdj_3TJ4RRZfaUDOV_x4dxY7uAGhDt7dLufGAfXcl0TiPHi_32dxgtevYSYYVI09-4ZZrjI1iLeisDooL7iUOQv7CgcHMLQEJbww2z4tkaZKM2Wks48lID1UTPSB_yetE8_m7zkNAcyeWmwBfo46f3KZ3yYXg");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex justify-center py-10 px-4">
+<div class="max-w-[800px] w-full flex flex-col gap-6">
+<!-- Page Heading -->
+<div class="flex flex-col gap-2 px-4">
+<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">App Settings</h1>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-lg font-normal">Manage your parish information and app preferences safely here.</p>
+</div>
+<!-- Section: Church & Finances -->
+<div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
+<h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Parish & Finance</h2>
+<!-- Church Profile -->
+<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">church</span>
+</div>
+<div class="flex flex-col grow">
+<p class="text-[#111812] dark:text-white text-lg font-bold">Church Profile</p>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-base">Update parish name, diocese, and your role details.</p>
+</div>
+<div class="shrink-0 text-[#638866]">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</a>
+<!-- Financial Categories -->
+<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</div>
+<div class="flex flex-col grow">
+<p class="text-[#111812] dark:text-white text-lg font-bold">Financial Categories</p>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-base">Manage Tithe, Offering, Harvest, and other fund types.</p>
+</div>
+<div class="shrink-0 text-[#638866]">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</a>
+</div>
+<!-- Section: Security & Maintenance -->
+<div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
+<h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Security & Backup</h2>
+<!-- Security & PIN -->
+<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">lock</span>
+</div>
+<div class="flex flex-col grow">
+<p class="text-[#111812] dark:text-white text-lg font-bold">Security & PIN</p>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-base">Change your 4-digit app access PIN to keep data safe.</p>
+</div>
+<div class="shrink-0 text-[#638866]">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</a>
+<!-- Backup Data -->
+<div class="flex items-center gap-4 px-6 py-6 border-b border-[#f0f4f1] dark:border-[#2a3a2c]">
+<div class="text-gold flex items-center justify-center rounded-xl bg-gold/10 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<div class="flex flex-col grow">
+<p class="text-[#111812] dark:text-white text-lg font-bold">Backup Data</p>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-sm">Last successful backup: Today at 09:15 AM</p>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-transform active:scale-95">
+                            Backup Now
+                        </button>
+</div>
+</div>
+<!-- App Version Info -->
+<div class="text-center mt-4">
+<p class="text-[#638866] text-sm">App Version 2.4.0 (MU-2024)</p>
+</div>
+<!-- Footer Actions -->
+<div class="mt-8 flex flex-col items-center gap-4">
+<button class="w-full max-w-[320px] flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold text-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+                        Log Out of App
+                    </button>
+<p class="text-[#638866] text-sm text-center max-w-md italic px-4">
+                        Always remember to log out if you are using a shared computer at the church office.
+                    </p>
+</div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<footer class="py-10 flex flex-col items-center opacity-50">
+<div class="flex gap-2 items-center text-[#638866]">
+<span class="material-symbols-outlined text-xl">verified_user</span>
+<span class="text-xs font-medium uppercase tracking-widest">Secured Anglican Mothers' Union Data Portal</span>
+</div>
+</footer>
+</div>
+</body>
+</html>

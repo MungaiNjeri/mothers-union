@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Financial Overview &amp; Reports - Mothers' Union</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;family=Noto+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf26",
+                        "church-gold": "#D4AF37",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112112",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111812] dark:text-white min-h-screen">
+<!-- Top Navigation Bar -->
+<div class="w-full flex flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark px-6 md:px-40 py-3">
+<div class="flex items-center gap-4 text-[#111812] dark:text-white">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">church</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] font-display">Mothers' Union Finance</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="dashboard.html">Dashboard</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">records</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="Transactions.html">Transactions</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="members.html">Members</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="setting.html">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Download PDF</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAi5cdZMsQePL6HMVex6MW7y3D2t28IsMm6jOxXVTbNdbj-aqOaIAli-4892hQZ_YHCjn883r9BpkDRPw4wz0-KBrfczZhiGuO-fZjknx0P3bVKpP6hcSX9sLyDxg1jsNXKCVEbL0OqDl0D7G_zMVRlpQgz1GvJg1lJ6YqCrNN2oOVg5CHr64b5wH91qmkKeCgjPsr0VfSyEZoBvAi1ZJ2lqag-gD3XPnniesV9R5mNHj05kTy5QwhH2jx1LQ52f50-nROVIan0jQ");'></div>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto w-full px-6 py-8">
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div class="flex flex-col gap-2">
+<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] font-display">Financial Overview</h1>
+<p class="text-gray-600 dark:text-gray-400 text-lg font-normal">A simple visual summary of our union's funds for 2026.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 rounded-lg h-10 px-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span>This Year</span>
+</button>
+<button class="flex items-center gap-2 rounded-lg h-10 px-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold">
+<span class="material-symbols-outlined text-sm">print</span>
+<span>Print View</span>
+</button>
+</div>
+</div>
+<!-- Stats Summary Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Money Coming In</p>
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+<p class="text-[#111812] dark:text-white tracking-tight text-3xl font-bold leading-tight">ksh12,450</p>
+<p class="text-primary text-sm font-bold">+12% from last year</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Money Spent</p>
+<span class="material-symbols-outlined text-red-500">trending_down</span>
+</div>
+<p class="text-[#111812] dark:text-white tracking-tight text-3xl font-bold leading-tight">ksh8,120</p>
+<p class="text-red-500 text-sm font-bold">-5% vs target budget</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Current Balance</p>
+<span class="material-symbols-outlined text-church-gold">account_balance_wallet</span>
+</div>
+<p class="text-[#111812] dark:text-white tracking-tight text-3xl font-bold leading-tight">ksh4,330</p>
+<p class="text-primary text-sm font-bold">Healthy surplus</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Main Bar Chart: Income vs Expenses -->
+<div class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm col-span-1 lg:col-span-2">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="text-xl font-bold text-[#111812] dark:text-white">Money Coming In vs. Money Spent</h2>
+<p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Comparing monthly cash flow for the current year</p>
+</div>
+<div class="flex gap-4 text-sm font-medium">
+<div class="flex items-center gap-2"><span class="w-3 h-3 bg-primary rounded-full"></span> Money In</div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 bg-church-gold rounded-full"></span> Money Spent</div>
+</div>
+</div>
+<div class="grid h-[300px] grid-flow-col gap-8 grid-rows-[1fr_auto] items-end justify-items-center px-4 mt-8">
+<!-- Jan -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 60%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 40%;"></div>
+</div>
+<!-- Feb -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 45%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 30%;"></div>
+</div>
+<!-- Mar -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 85%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 50%;"></div>
+</div>
+<!-- Apr -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 35%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 60%;"></div>
+</div>
+<!-- May -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 70%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 25%;"></div>
+</div>
+<!-- Jun -->
+<div class="flex items-end gap-1 h-full w-full">
+<div class="bg-primary/80 w-full rounded-t" style="height: 55%;"></div>
+<div class="bg-church-gold/80 w-full rounded-t" style="height: 40%;"></div>
+</div>
+<!-- Month Labels -->
+<p class="text-xs font-bold text-gray-500 mt-2">Jan</p>
+<p class="text-xs font-bold text-gray-500 mt-2">Feb</p>
+<p class="text-xs font-bold text-gray-500 mt-2">Mar</p>
+<p class="text-xs font-bold text-gray-500 mt-2">Apr</p>
+<p class="text-xs font-bold text-gray-500 mt-2">May</p>
+<p class="text-xs font-bold text-gray-500 mt-2">Jun</p>
+</div>
+<div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+<p class="text-sm text-gray-700 dark:text-gray-300">
+<strong>Summary:</strong> So far, we have saved <strong>$4,330</strong> more than we spent this year.
+                        </p>
+</div>
+</div>
+<!-- Pie Chart: Distribution by Category -->
+<div class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+<h2 class="text-xl font-bold text-[#111812] dark:text-white">Where Our Money Goes</h2>
+<p class="text-gray-600 dark:text-gray-400 text-sm">Distribution of expenses across different union activities</p>
+<div class="flex items-center justify-center py-8">
+<!-- Abstract Pie Chart representation using CSS gradients -->
+<div class="relative size-48 rounded-full shadow-inner flex items-center justify-center text-center p-6 border-8 border-white dark:border-gray-800" style="background: conic-gradient(#17cf26 0% 40%, #D4AF37 40% 70%, #638866 70% 90%, #f0f4f1 90% 100%);">
+<div class="absolute bg-white dark:bg-gray-900 rounded-full size-24 flex items-center justify-center shadow-lg">
+<span class="text-xl font-bold">ksh 8,120</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="flex items-center gap-2 text-sm">
+<div class="w-3 h-3 bg-primary rounded-sm"></div>
+<span class="font-medium">Welfare (40%)</span>
+</div>
+<div class="flex items-center gap-2 text-sm">
+<div class="w-3 h-3 bg-church-gold rounded-sm"></div>
+<span class="font-medium">Events (30%)</span>
+</div>
+<div class="flex items-center gap-2 text-sm">
+<div class="w-3 h-3 bg-[#638866] rounded-sm"></div>
+<span class="font-medium">Tithes (20%)</span>
+</div>
+<div class="flex items-center gap-2 text-sm">
+<div class="w-3 h-3 bg-[#f0f4f1] rounded-sm"></div>
+<span class="font-medium">Other (10%)</span>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+<p class="text-sm text-gray-700 dark:text-gray-300">
+<strong>Summary:</strong> The largest spend this year was <strong>$6000</strong> on member welfare support.
+                        </p>
+</div>
+</div>
+<!-- Line Chart: Contribution Trends -->
+<div class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+<h2 class="text-xl font-bold text-[#111812] dark:text-white">Giving Trends</h2>
+<p class="text-gray-600 dark:text-gray-400 text-sm">How regular member contributions change over time</p>
+<div class="relative h-48 mt-8 flex items-end">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 400 100">
+<path d="M0,80 Q50,40 100,60 T200,30 T300,70 T400,20" fill="none" stroke="#17cf26" stroke-linecap="round" stroke-width="4"></path>
+<path d="M0,80 Q50,40 100,60 T200,30 T300,70 T400,20 V100 H0 Z" fill="url(#grad1)" opacity="0.1"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#17cf26;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#17cf26;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<!-- Data dots -->
+<circle cx="0" cy="80" fill="#17cf26" r="4"></circle>
+<circle cx="100" cy="60" fill="#17cf26" r="4"></circle>
+<circle cx="200" cy="30" fill="#17cf26" r="4"></circle>
+<circle cx="300" cy="70" fill="#17cf26" r="4"></circle>
+<circle cx="400" cy="20" fill="#17cf26" r="4"></circle>
+</svg>
+</div>
+<div class="flex justify-between text-xs font-bold text-gray-500 mt-2 px-1">
+<span>Jan</span>
+<span>Mar</span>
+<span>May</span>
+<span>Jul</span>
+<span>Sep</span>
+</div>
+<div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+<p class="text-sm text-gray-700 dark:text-gray-300">
+<strong>Summary:</strong> Giving is at its highest in <strong>September</strong> due to the Annual Conference.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Detail Cards Grid -->
+<div class="mt-12 mb-8">
+<h3 class="text-2xl font-bold mb-6 font-display">Fund Breakdown Details</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+<div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<div class="flex flex-col gap-1">
+<h4 class="text-lg font-bold text-[#111812] dark:text-white">Welfare Fund</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm leading-normal">ksh 5,000 specifically allocated for supporting members in need.</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+<div class="size-10 rounded-full bg-church-gold/10 flex items-center justify-center text-church-gold">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div class="flex flex-col gap-1">
+<h4 class="text-lg font-bold text-[#111812] dark:text-white">Events &amp; Meetings</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm leading-normal">ksh 3,000 budget used for monthly teas and the yearly retreat.</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+<div class="size-10 rounded-full bg-green-800/10 flex items-center justify-center text-green-800">
+<span class="material-symbols-outlined">volunteer_activism</span>
+</div>
+<div class="flex flex-col gap-1">
+<h4 class="text-lg font-bold text-[#111812] dark:text-white">Tithes &amp; Dues</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm leading-normal">ksh 12,000 regular monthly contributions from our faithful members.</p>
+</div>
+</div>
+</div>
+</div>
+<footer class="mt-16 pb-12 text-center text-gray-500 text-sm">
+<div class="border-t border-gray-200 dark:border-gray-800 pt-8">
+<p>© 2026 Mothers' Union Anglican Church - Finance Dashboard</p>
+<p class="mt-1 italic">"Bear one another's burdens, and so fulfill the law of Christ." (Galatians 6:2)</p>
+</div>
+</footer>
+</main>
+</div>
+</body></html>
