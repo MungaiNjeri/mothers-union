@@ -38,9 +38,39 @@
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: 100% 60px
-    }</style>
+    }
+    /* Toast notification */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        transform: translateX(120%);
+        transition: transform 0.3s ease-out;
+    }
+    .toast.show {
+        transform: translateX(0);
+    }
+    .toast.success {
+        background-color: #10b981;
+    }
+    .toast.info {
+        background-color: #3b82f6;
+    }
+    .toast.warning {
+        background-color: #f59e0b;
+    }
+</style>
 </head>
 <body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111812] dark:text-white">
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
 <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a] px-10 py-3 sticky top-0 z-50">
 <div class="flex items-center gap-4 text-[#111812] dark:text-white">
 <div class="size-8 text-primary">
@@ -68,14 +98,14 @@
 </header>
 <main class="max-w-[1200px] mx-auto py-8 px-6">
 <div class="mb-10">
-<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Good Morning, Naomi</h1>
-<p class="text-[#638866] dark:text-[#a3c3a6] text-lg font-normal leading-normal">Today is Thursday, 12th October 2023</p>
+<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]" id="greeting">Good Morning, Naomi</h1>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-lg font-normal leading-normal" id="currentDate">Today is Thursday, 12th October 2023</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 <div class="bg-accent-gold text-white p-8 rounded-xl shadow-lg border border-accent-gold/20 flex flex-col justify-between">
 <div>
 <p class="text-white/80 text-sm font-bold uppercase tracking-wider mb-1">Current Balance</p>
-<p class="text-4xl font-black">KSH420,000</p>
+<p class="text-4xl font-black" id="currentBalance">KSH420,000</p>
 </div>
 <div class="mt-4 flex items-center gap-2">
 <span class="material-symbols-outlined">account_balance_wallet</span>
@@ -85,21 +115,21 @@
 <div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
 <div>
 <p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Income This Month</p>
-<p class="text-primary text-4xl font-black">ksh250,000</p>
+<p class="text-primary text-4xl font-black" id="monthlyIncome">ksh250,000</p>
 </div>
 <div class="mt-4 flex items-center gap-2 text-primary font-medium">
 <span class="material-symbols-outlined">trending_up</span>
-<span class="text-sm">+12% from last month</span>
+<span class="text-sm" id="incomeChange">+12% from last month</span>
 </div>
 </div>
 <div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
 <div>
 <p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Expenses This Month</p>
-<p class="text-soft-red dark:text-[#ff6b6b] text-4xl font-black">ksh30,000</p>
+<p class="text-soft-red dark:text-[#ff6b6b] text-4xl font-black" id="monthlyExpenses">ksh30,000</p>
 </div>
 <div class="mt-4 flex items-center gap-2 text-accent-gold font-medium">
 <span class="material-symbols-outlined">payments</span>
-<span class="text-sm">8 Pending Approvals</span>
+<span class="text-sm" id="pendingApprovals">8 Pending Approvals</span>
 </div>
 </div>
 </div>
@@ -110,7 +140,7 @@
 <a class="text-primary text-sm font-bold hover:underline" href="Transactions.html">View All</a>
 </div>
 <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] overflow-hidden shadow-sm">
-<div class="divide-y divide-[#dce5dc] dark:divide-[#2a3a2a]">
+<div id="transactionsContainer" class="divide-y divide-[#dce5dc] dark:divide-[#2a3a2a]">
 <div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
 <div class="flex items-center gap-4">
 <div class="bg-primary/10 text-primary p-2 rounded-lg">
@@ -193,14 +223,35 @@
 <div class="bg-white dark:bg-[#1a2a1a] p-6 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col h-full">
 <h3 class="text-base font-bold mb-1">Weekly Giving Trend</h3>
 <p class="text-xs text-[#638866] mb-4">Pulse of church finances</p>
-<div class="chart-container flex-grow min-h-[120px] flex items-end justify-between px-2">
+<div class="chart-container flex-grow min-h-[120px] flex items-end justify-between px-2" id="chartBars">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="65"></div>
 <div class="text-[10px] text-[#638866]">Mon</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="40"></div>
 <div class="text-[10px] text-[#638866]">Tue</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="80"></div>
 <div class="text-[10px] text-[#638866]">Wed</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="55"></div>
 <div class="text-[10px] text-[#638866]">Thu</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="95"></div>
 <div class="text-[10px] text-[#638866]">Fri</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="30"></div>
 <div class="text-[10px] text-[#638866]">Sat</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 bg-accent-gold rounded-t-md transition-all duration-500" style="height: 0" data-value="100"></div>
 <div class="text-[10px] text-[#638866]">Sun</div>
+</div>
 </div>
 </div>
 </div>
@@ -208,8 +259,278 @@
 </main>
 <footer class="mt-12 py-8 border-t border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a]">
 <div class="max-w-[1200px] mx-auto px-6 text-center">
-<p class="text-[#638866] text-sm">© 2026 Mothers' Union Anglican Diocese. All financial data is encrypted and secure.</p>
+<p class="text-[#638866] text-sm">© <span id="currentYear">2026</span> Mothers' Union Anglican Diocese. All financial data is encrypted and secure.</p>
 </div>
 </footer>
+
+<script>
+// Function to show toast notifications
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">
+                ${type === 'success' ? 'check_circle' : 
+                  type === 'warning' ? 'warning' : 'info'}
+            </span>
+            <span>${message}</span>
+        </div>
+    `;
+    toastContainer.appendChild(toast);
+    
+    // Show toast
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Remove toast after 4 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Function to format currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-KE', {
+        style: 'currency',
+        currency: 'KES',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount).replace('KES', 'KSH');
+}
+
+// Function to update date and time
+function updateDateTime() {
+    const now = new Date();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    const dayName = days[now.getDay()];
+    const date = now.getDate();
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+    
+    // Add ordinal suffix to date
+    const suffix = (date % 10 === 1 && date !== 11) ? 'st' :
+                  (date % 10 === 2 && date !== 12) ? 'nd' :
+                  (date % 10 === 3 && date !== 13) ? 'rd' : 'th';
+    
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+        dateElement.textContent = `Today is ${dayName}, ${date}${suffix} ${monthName} ${year}`;
+    }
+    
+    // Update greeting based on time of day
+    const hour = now.getHours();
+    let greeting = 'Good ';
+    if (hour < 12) greeting += 'Morning';
+    else if (hour < 17) greeting += 'Afternoon';
+    else greeting += 'Evening';
+    
+    const greetingElement = document.getElementById('greeting');
+    if (greetingElement) {
+        greetingElement.textContent = `${greeting}, Naomi`;
+    }
+    
+    // Update current year in footer
+    const yearElement = document.getElementById('currentYear');
+    if (yearElement) {
+        yearElement.textContent = year;
+    }
+}
+
+// Function to animate chart bars
+function animateChartBars() {
+    const bars = document.querySelectorAll('#chartBars div div');
+    bars.forEach(bar => {
+        const value = parseInt(bar.getAttribute('data-value'));
+        // Animate to percentage height
+        setTimeout(() => {
+            bar.style.height = `${value}%`;
+        }, 100);
+    });
+}
+
+// Function to update dashboard statistics from localStorage
+function updateDashboardStats() {
+    // Load transactions from localStorage
+    const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+    
+    // Calculate current month stats
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    let monthlyIncome = 0;
+    let monthlyExpenses = 0;
+    
+    transactions.forEach(transaction => {
+        const txDate = new Date(transaction.date);
+        if (txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear) {
+            if (transaction.type === 'money_in') {
+                monthlyIncome += parseFloat(transaction.amount);
+            } else {
+                monthlyExpenses += parseFloat(transaction.amount);
+            }
+        }
+    });
+    
+    // Calculate current balance (starting balance + income - expenses)
+    const startingBalance = 300000; // Assume starting balance
+    const currentBalance = startingBalance + monthlyIncome - monthlyExpenses;
+    
+    // Update DOM elements
+    const balanceElement = document.getElementById('currentBalance');
+    const incomeElement = document.getElementById('monthlyIncome');
+    const expensesElement = document.getElementById('monthlyExpenses');
+    
+    if (balanceElement) balanceElement.textContent = formatCurrency(currentBalance);
+    if (incomeElement) incomeElement.textContent = formatCurrency(monthlyIncome).toLowerCase();
+    if (expensesElement) expensesElement.textContent = formatCurrency(monthlyExpenses).toLowerCase();
+    
+    // Update recent transactions
+    updateRecentTransactions(transactions);
+    
+    // Update pending approvals count
+    const pendingCount = Math.floor(Math.random() * 5) + 1; // Random 1-5 for demo
+    const pendingElement = document.getElementById('pendingApprovals');
+    if (pendingElement) {
+        pendingElement.textContent = `${pendingCount} Pending Approval${pendingCount !== 1 ? 's' : ''}`;
+    }
+}
+
+// Function to update recent transactions list
+function updateRecentTransactions(transactions) {
+    const container = document.getElementById('transactionsContainer');
+    if (!container) return;
+    
+    // Sort by date, newest first
+    const sortedTransactions = [...transactions]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5); // Show only 5 most recent
+    
+    if (sortedTransactions.length === 0) {
+        container.innerHTML = `
+            <div class="p-8 text-center">
+                <span class="material-symbols-outlined text-4xl text-gray-400 mb-2">receipt_long</span>
+                <p class="text-gray-500">No transactions yet</p>
+                <p class="text-sm text-gray-400 mt-1">Add your first transaction to see it here</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    sortedTransactions.forEach(tx => {
+        const txDate = new Date(tx.date);
+        const formattedDate = txDate.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+        
+        const isIncome = tx.type === 'money_in';
+        const amount = parseFloat(tx.amount).toLocaleString('en-KE');
+        
+        const transactionHTML = `
+            <div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="${isIncome ? 'bg-primary/10 text-primary' : 'bg-accent-gold/10 text-accent-gold'} p-2 rounded-lg">
+                        <span class="material-symbols-outlined">${isIncome ? 'add_circle' : 'remove_circle'}</span>
+                    </div>
+                    <div>
+                        <p class="font-bold">${tx.source}</p>
+                        <p class="text-xs text-[#638866]">${tx.category} • ${formattedDate}</p>
+                    </div>
+                </div>
+                <p class="font-black ${isIncome ? 'text-primary' : 'text-accent-gold'}">${isIncome ? '+' : '-'}${amount}</p>
+            </div>
+        `;
+        
+        container.innerHTML += transactionHTML;
+    });
+}
+
+// Function to simulate real-time data updates
+function simulateRealTimeUpdates() {
+    // Randomly update chart values every 30 seconds
+    setInterval(() => {
+        const bars = document.querySelectorAll('#chartBars div div');
+        bars.forEach(bar => {
+            const currentValue = parseInt(bar.getAttribute('data-value'));
+            const change = Math.floor(Math.random() * 20) - 10; // -10 to +10
+            const newValue = Math.max(10, Math.min(100, currentValue + change));
+            bar.setAttribute('data-value', newValue);
+            bar.style.height = `${newValue}%`;
+        });
+        
+        // Randomly update income change indicator
+        const changeElement = document.getElementById('incomeChange');
+        if (changeElement) {
+            const change = (Math.random() > 0.5 ? '+' : '-') + Math.floor(Math.random() * 15) + 1 + '%';
+            changeElement.textContent = `${change} from last month`;
+        }
+        
+        // Show subtle notification
+        showToast('Dashboard data updated', 'info');
+    }, 30000); // Every 30 seconds
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Update date and time immediately
+    updateDateTime();
+    
+    // Update every minute
+    setInterval(updateDateTime, 60000);
+    
+    // Animate chart bars after a short delay
+    setTimeout(animateChartBars, 500);
+    
+    // Load and display stats from localStorage
+    updateDashboardStats();
+    
+    // Check for new transactions periodically (every 10 seconds)
+    setInterval(updateDashboardStats, 10000);
+    
+    // Start real-time updates simulation
+    simulateRealTimeUpdates();
+    
+    // Show welcome message
+    setTimeout(() => {
+        showToast('Welcome to Mothers\' Union Finance Dashboard', 'success');
+    }, 1000);
+    
+    // Add click handlers to transaction items for demo purposes
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.hover\\:bg-primary\\/5')) {
+            showToast('Click "View All" to see transaction details', 'info');
+        }
+    });
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            updateDashboardStats();
+            showToast('Dashboard refreshed', 'success');
+        }
+        if (e.ctrlKey && e.key === 'n') {
+            e.preventDefault();
+            window.location.href = 'transactions-new.html';
+        }
+    });
+    
+    // Display keyboard shortcuts help on first visit
+    if (!localStorage.getItem('dashboardHelpShown')) {
+        setTimeout(() => {
+            showToast('Tip: Use Ctrl+R to refresh, Ctrl+N for new transaction', 'warning');
+            localStorage.setItem('dashboardHelpShown', 'true');
+        }, 3000);
+    }
+});
+</script>
 </body>
 </html>

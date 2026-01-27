@@ -29,9 +29,274 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            background-color: #10b981;
+        }
+        .toast.info {
+            background-color: #3b82f6;
+        }
+        .toast.warning {
+            background-color: #f59e0b;
+        }
+        .toast.error {
+            background-color: #ef4444;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .dark .modal-content {
+            background: #1a2e1b;
+            color: white;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #17cf26;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* PIN input styles */
+        .pin-input {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            margin: 0 8px;
+        }
+        .pin-input:focus {
+            border-color: #17cf26;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(23, 207, 38, 0.1);
+        }
+        .pin-input.filled {
+            border-color: #17cf26;
+            background-color: rgba(23, 207, 38, 0.05);
+        }
+        
+        /* Toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #17cf26;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #17cf26;
+        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-[#111812] dark:text-white">
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- Church Profile Modal -->
+    <div id="churchProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Church Profile</h3>
+                <button id="closeChurchModal" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="churchProfileForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Parish Name *</label>
+                    <input type="text" id="parishName" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Diocese *</label>
+                    <input type="text" id="diocese" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Location</label>
+                    <input type="text" id="location" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700" placeholder="City, Country">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Your Role *</label>
+                    <select id="role" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700" required>
+                        <option value="treasurer">Treasurer</option>
+                        <option value="assistant-treasurer">Assistant Treasurer</option>
+                        <option value="secretary">Secretary</option>
+                        <option value="chairperson">Chairperson</option>
+                        <option value="member">Member</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Currency *</label>
+                    <select id="currency" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700" required>
+                        <option value="KES">Kenyan Shilling (KES)</option>
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="GBP">British Pound (GBP)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="cancelChurchProfile" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Financial Categories Modal -->
+    <div id="categoriesModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Financial Categories</h3>
+                <button id="closeCategoriesModal" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h4 class="font-medium mb-3">Income Categories</h4>
+                    <div id="incomeCategories" class="space-y-2">
+                        <!-- Income categories will be loaded here -->
+                    </div>
+                    <button id="addIncomeCategory" class="mt-3 text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        Add New Income Category
+                    </button>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-3">Expense Categories</h4>
+                    <div id="expenseCategories" class="space-y-2">
+                        <!-- Expense categories will be loaded here -->
+                    </div>
+                    <button id="addExpenseCategory" class="mt-3 text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        Add New Expense Category
+                    </button>
+                </div>
+                <div class="pt-4 border-t">
+                    <button id="saveCategories" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                        Save All Categories
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security PIN Modal -->
+    <div id="pinModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Security PIN</h3>
+                <button id="closePinModal" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="text-center">
+                    <div class="flex justify-center mb-6">
+                        <input type="text" maxlength="1" class="pin-input" id="pin1" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="pin-input" id="pin2" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="pin-input" id="pin3" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="pin-input" id="pin4" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                    <p id="pinMessage" class="text-sm text-gray-600 dark:text-gray-300">Enter your new 4-digit PIN</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Enable PIN on app launch</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="pinEnabled" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Require PIN for transactions</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="pinForTransactions" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Auto-lock after 5 minutes</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoLock" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="cancelPin" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
+                    <button type="button" id="savePin" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Save PIN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <span class="material-symbols-outlined text-red-500 text-4xl mb-4">logout</span>
+                <h3 class="text-xl font-bold mb-2">Confirm Logout</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Are you sure you want to log out? All unsaved changes will be lost.</p>
+                <div class="flex justify-center gap-4">
+                    <button id="cancelLogout" class="px-6 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
+                    <button id="confirmLogout" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <div class="layout-container flex h-full grow flex-col">
 <!-- Top Navigation Bar -->
 <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e0e7e1] dark:border-[#2a3a2c] bg-white dark:bg-[#1a2e1b] px-10 py-3">
@@ -49,7 +314,7 @@
 <a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="dashboard.html">Dashboard</a>
 
 <!-- Record New Link -->
-<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">Record New</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="transactions-new.html">Record New</a>
 
 <!-- Transactions Link -->
 <a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="transactions.html">Transactions</a>
@@ -68,7 +333,7 @@
 <a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="help-center.html">Help Center</a>
 </nav>
 <div class="flex items-center gap-4">
-<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f4f1] dark:bg-[#2a3a2c] text-[#111812] dark:text-white">
+<button id="notificationsBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f4f1] dark:bg-[#2a3a2c] text-[#111812] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
 <span class="material-symbols-outlined">notifications</span>
 </button>
 <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile picture placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQDO2qqJ6Vh6z-e8h0b4Fs2o7FIyYZ5dGHlgk-ioChT0Xy74gd5ofMEaQ-xY62xn4GyBjYU2S_nuB-FGZKbDDLNOiV-h0jFqmF8dPKPYX-RB4iCUdj_3TJ4RRZfaUDOV_x4dxY7uAGhDt7dLufGAfXcl0TiPHi_32dxgtevYSYYVI09-4ZZrjI1iLeisDooL7iUOQv7CgcHMLQEJbww2z4tkaZKM2Wks48lID1UTPSB_yetE8_m7zkNAcyeWmwBfo46f3KZ3yYXg");'></div>
@@ -87,7 +352,7 @@
 <div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
 <h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Parish & Finance</h2>
 <!-- Church Profile -->
-<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c] cursor-pointer" id="churchProfileBtn">
 <div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
 <span class="material-symbols-outlined text-3xl">church</span>
 </div>
@@ -98,9 +363,9 @@
 <div class="shrink-0 text-[#638866]">
 <span class="material-symbols-outlined">chevron_right</span>
 </div>
-</a>
+</div>
 <!-- Financial Categories -->
-<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c] cursor-pointer" id="categoriesBtn">
 <div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
 <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
 </div>
@@ -111,13 +376,13 @@
 <div class="shrink-0 text-[#638866]">
 <span class="material-symbols-outlined">chevron_right</span>
 </div>
-</a>
+</div>
 </div>
 <!-- Section: Security & Maintenance -->
 <div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
 <h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Security & Backup</h2>
 <!-- Security & PIN -->
-<a class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c]" href="#">
+<div class="flex items-center gap-4 px-6 py-6 hover:bg-[#f0f4f1] dark:hover:bg-[#2a3a2c] transition-colors border-b border-[#f0f4f1] dark:border-[#2a3a2c] cursor-pointer" id="securityBtn">
 <div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
 <span class="material-symbols-outlined text-3xl">lock</span>
 </div>
@@ -128,7 +393,7 @@
 <div class="shrink-0 text-[#638866]">
 <span class="material-symbols-outlined">chevron_right</span>
 </div>
-</a>
+</div>
 <!-- Backup Data -->
 <div class="flex items-center gap-4 px-6 py-6 border-b border-[#f0f4f1] dark:border-[#2a3a2c]">
 <div class="text-gold flex items-center justify-center rounded-xl bg-gold/10 shrink-0 size-14">
@@ -136,20 +401,69 @@
 </div>
 <div class="flex flex-col grow">
 <p class="text-[#111812] dark:text-white text-lg font-bold">Backup Data</p>
-<p class="text-[#638866] dark:text-[#a3b8a5] text-sm">Last successful backup: Today at 09:15 AM</p>
+<p id="backupStatus" class="text-[#638866] dark:text-[#a3b8a5] text-sm">Last successful backup: Today at 09:15 AM</p>
 </div>
-<button class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-transform active:scale-95">
+<button id="backupBtn" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-transform active:scale-95">
                             Backup Now
                         </button>
 </div>
 </div>
+
+<!-- Theme Toggle -->
+<div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
+<h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Appearance</h2>
+<div class="flex items-center justify-between px-6 py-6">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-14">
+<span class="material-symbols-outlined text-3xl">dark_mode</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#111812] dark:text-white text-lg font-bold">Theme</p>
+<p class="text-[#638866] dark:text-[#a3b8a5] text-base">Switch between light and dark mode</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+    <input type="checkbox" id="themeToggle" class="sr-only peer">
+    <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+
+<!-- Data Management -->
+<div class="bg-white dark:bg-[#1a2e1b] rounded-xl shadow-sm border border-[#e0e7e1] dark:border-[#2a3a2c] overflow-hidden">
+<h2 class="text-[#111812] dark:text-white text-xl font-bold px-6 py-5 bg-[#fbfdfb] dark:bg-[#1f3520] border-b border-[#e0e7e1] dark:border-[#2a3a2c]">Data Management</h2>
+<div class="p-6 space-y-4">
+<button id="exportDataBtn" class="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">download</span>
+<span class="font-medium">Export All Data</span>
+</div>
+<span class="material-symbols-outlined text-gray-400">chevron_right</span>
+</button>
+<button id="importDataBtn" class="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">upload</span>
+<span class="font-medium">Import Data</span>
+</div>
+<span class="material-symbols-outlined text-gray-400">chevron_right</span>
+</button>
+<button id="clearDataBtn" class="w-full flex items-center justify-between p-4 rounded-lg border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-medium">Clear All Data</span>
+</div>
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+
 <!-- App Version Info -->
 <div class="text-center mt-4">
-<p class="text-[#638866] text-sm">App Version 2.4.0 (MU-2024)</p>
+<p class="text-[#638866] text-sm">App Version <span id="appVersion">2.4.0</span> (MU-<span id="appYear">2026</span>)</p>
 </div>
 <!-- Footer Actions -->
 <div class="mt-8 flex flex-col items-center gap-4">
-<button class="w-full max-w-[320px] flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold text-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+<button id="logoutBtn" class="w-full max-w-[320px] flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold text-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
 <span class="material-symbols-outlined">logout</span>
                         Log Out of App
                     </button>
@@ -167,5 +481,665 @@
 </div>
 </footer>
 </div>
+
+<script>
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">
+                ${type === 'success' ? 'check_circle' : 
+                  type === 'warning' ? 'warning' : 
+                  type === 'error' ? 'error' : 'info'}
+            </span>
+            <span>${message}</span>
+        </div>
+    `;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Initialize settings data in localStorage
+function initializeSettings() {
+    if (!localStorage.getItem('mothersUnionSettings')) {
+        const defaultSettings = {
+            churchProfile: {
+                parishName: "St. Mary's Mothers' Union",
+                diocese: "Anglican Diocese of Nairobi",
+                location: "Nairobi, Kenya",
+                role: "treasurer",
+                currency: "KES"
+            },
+            financialCategories: {
+                income: ['Tithe', 'Offering', 'Donation', 'Membership Fee', 'Harvest', 'Project Fund'],
+                expense: ['Utilities', 'Community Event', 'Welfare', 'Office Supplies', 'Transport', 'Communication']
+            },
+            security: {
+                pin: '0000',
+                pinEnabled: true,
+                pinForTransactions: false,
+                autoLock: true
+            },
+            appearance: {
+                theme: 'light'
+            },
+            backup: {
+                lastBackup: new Date().toISOString(),
+                autoBackup: true
+            }
+        };
+        localStorage.setItem('mothersUnionSettings', JSON.stringify(defaultSettings));
+    }
+}
+
+// Load settings
+function loadSettings() {
+    return JSON.parse(localStorage.getItem('mothersUnionSettings') || '{}');
+}
+
+// Save settings
+function saveSettings(settings) {
+    localStorage.setItem('mothersUnionSettings', JSON.stringify(settings));
+}
+
+// Load church profile
+function loadChurchProfile() {
+    const settings = loadSettings();
+    return settings.churchProfile || {};
+}
+
+// Save church profile
+function saveChurchProfile(profile) {
+    const settings = loadSettings();
+    settings.churchProfile = profile;
+    saveSettings(settings);
+}
+
+// Load financial categories
+function loadFinancialCategories() {
+    const settings = loadSettings();
+    return settings.financialCategories || { income: [], expense: [] };
+}
+
+// Save financial categories
+function saveFinancialCategories(categories) {
+    const settings = loadSettings();
+    settings.financialCategories = categories;
+    saveSettings(settings);
+}
+
+// Load security settings
+function loadSecuritySettings() {
+    const settings = loadSettings();
+    return settings.security || {};
+}
+
+// Save security settings
+function saveSecuritySettings(security) {
+    const settings = loadSettings();
+    settings.security = security;
+    saveSettings(settings);
+}
+
+// Update backup status
+function updateBackupStatus() {
+    const settings = loadSettings();
+    const lastBackup = settings.backup?.lastBackup;
+    
+    if (lastBackup) {
+        const backupDate = new Date(lastBackup);
+        const now = new Date();
+        const diffTime = Math.abs(now - backupDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let statusText = 'Last successful backup: ';
+        
+        if (diffDays === 0) {
+            const timeString = backupDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            statusText += `Today at ${timeString}`;
+        } else if (diffDays === 1) {
+            statusText += 'Yesterday';
+        } else if (diffDays < 7) {
+            statusText += `${diffDays} days ago`;
+        } else {
+            statusText += backupDate.toLocaleDateString();
+        }
+        
+        document.getElementById('backupStatus').textContent = statusText;
+    }
+}
+
+// Perform backup
+function performBackup() {
+    const backupBtn = document.getElementById('backupBtn');
+    const originalText = backupBtn.innerHTML;
+    
+    // Show loading state
+    backupBtn.innerHTML = '<div class="spinner"></div>';
+    backupBtn.disabled = true;
+    
+    // Simulate backup process
+    setTimeout(() => {
+        // Get all data
+        const settings = loadSettings();
+        const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+        const members = JSON.parse(localStorage.getItem('mothersUnionMembers') || '[]');
+        
+        // Update backup timestamp
+        settings.backup = {
+            ...settings.backup,
+            lastBackup: new Date().toISOString()
+        };
+        saveSettings(settings);
+        
+        // Create backup object
+        const backupData = {
+            timestamp: new Date().toISOString(),
+            settings: settings,
+            transactions: transactions,
+            members: members
+        };
+        
+        // Save backup to localStorage
+        localStorage.setItem('mothersUnionBackup', JSON.stringify(backupData));
+        
+        // Also create downloadable file
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mothers-union-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        // Update UI
+        backupBtn.innerHTML = originalText;
+        backupBtn.disabled = false;
+        updateBackupStatus();
+        
+        showToast('Backup completed successfully! File downloaded.', 'success');
+    }, 1500);
+}
+
+// Export data
+function exportData() {
+    const settings = loadSettings();
+    const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+    const members = JSON.parse(localStorage.getItem('mothersUnionMembers') || '[]');
+    
+    const exportData = {
+        metadata: {
+            exportDate: new Date().toISOString(),
+            appVersion: '2.4.0',
+            churchName: settings.churchProfile?.parishName || 'Mothers\' Union'
+        },
+        settings: settings,
+        transactions: transactions,
+        members: members
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mothers-union-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showToast('Data exported successfully!', 'success');
+}
+
+// Import data
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            try {
+                const data = JSON.parse(event.target.result);
+                
+                if (confirm('This will replace all current data. Are you sure?')) {
+                    if (data.settings) {
+                        localStorage.setItem('mothersUnionSettings', JSON.stringify(data.settings));
+                    }
+                    if (data.transactions) {
+                        localStorage.setItem('mothersUnionTransactions', JSON.stringify(data.transactions));
+                    }
+                    if (data.members) {
+                        localStorage.setItem('mothersUnionMembers', JSON.stringify(data.members));
+                    }
+                    
+                    showToast('Data imported successfully!', 'success');
+                    updateBackupStatus();
+                }
+            } catch (error) {
+                showToast('Invalid file format', 'error');
+            }
+        };
+        
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+// Clear all data
+function clearAllData() {
+    if (confirm('WARNING: This will delete ALL data including transactions, members, and settings. This action cannot be undone. Are you sure?')) {
+        localStorage.clear();
+        initializeSettings();
+        showToast('All data cleared. App reset to defaults.', 'warning');
+        updateBackupStatus();
+    }
+}
+
+// PIN input handling
+function setupPinInputs() {
+    const pinInputs = document.querySelectorAll('.pin-input');
+    
+    pinInputs.forEach((input, index) => {
+        // Focus on next input when a digit is entered
+        input.addEventListener('input', function(e) {
+            if (this.value.length === 1) {
+                this.classList.add('filled');
+                if (index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            } else {
+                this.classList.remove('filled');
+            }
+            validatePin();
+        });
+        
+        // Handle backspace
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                pinInputs[index - 1].focus();
+                pinInputs[index - 1].classList.remove('filled');
+            }
+        });
+        
+        // Only allow numbers
+        input.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+    });
+}
+
+// Validate PIN
+function validatePin() {
+    const pinInputs = document.querySelectorAll('.pin-input');
+    const savePinBtn = document.getElementById('savePin');
+    const pinMessage = document.getElementById('pinMessage');
+    
+    let pin = '';
+    let allFilled = true;
+    
+    pinInputs.forEach(input => {
+        pin += input.value;
+        if (input.value === '') {
+            allFilled = false;
+        }
+    });
+    
+    // Basic validation
+    if (allFilled) {
+        if (pin === '0000') {
+            pinMessage.textContent = 'PIN cannot be 0000';
+            pinMessage.classList.add('text-red-500');
+            savePinBtn.disabled = true;
+        } else if (pin === '1234') {
+            pinMessage.textContent = 'Please choose a more secure PIN';
+            pinMessage.classList.add('text-yellow-500');
+            savePinBtn.disabled = false;
+        } else if (/^(\d)\1{3}$/.test(pin)) {
+            pinMessage.textContent = 'Avoid repeating digits';
+            pinMessage.classList.add('text-yellow-500');
+            savePinBtn.disabled = false;
+        } else {
+            pinMessage.textContent = 'PIN is valid';
+            pinMessage.classList.remove('text-red-500', 'text-yellow-500');
+            pinMessage.classList.add('text-green-500');
+            savePinBtn.disabled = false;
+        }
+    } else {
+        pinMessage.textContent = 'Enter your new 4-digit PIN';
+        pinMessage.classList.remove('text-red-500', 'text-yellow-500', 'text-green-500');
+        savePinBtn.disabled = true;
+    }
+}
+
+// Open church profile modal
+function openChurchProfileModal() {
+    const profile = loadChurchProfile();
+    
+    document.getElementById('parishName').value = profile.parishName || '';
+    document.getElementById('diocese').value = profile.diocese || '';
+    document.getElementById('location').value = profile.location || '';
+    document.getElementById('role').value = profile.role || 'treasurer';
+    document.getElementById('currency').value = profile.currency || 'KES';
+    
+    document.getElementById('churchProfileModal').classList.add('show');
+}
+
+// Open categories modal
+function openCategoriesModal() {
+    const categories = loadFinancialCategories();
+    
+    // Render income categories
+    const incomeContainer = document.getElementById('incomeCategories');
+    incomeContainer.innerHTML = categories.income.map(category => `
+        <div class="flex items-center gap-2 p-2 border rounded">
+            <input type="text" value="${category}" class="flex-1 p-2 border-none bg-transparent" data-type="income">
+            <button class="delete-category text-red-500 hover:text-red-700" data-type="income">
+                <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+        </div>
+    `).join('');
+    
+    // Render expense categories
+    const expenseContainer = document.getElementById('expenseCategories');
+    expenseContainer.innerHTML = categories.expense.map(category => `
+        <div class="flex items-center gap-2 p-2 border rounded">
+            <input type="text" value="${category}" class="flex-1 p-2 border-none bg-transparent" data-type="expense">
+            <button class="delete-category text-red-500 hover:text-red-700" data-type="expense">
+                <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+        </div>
+    `).join('');
+    
+    document.getElementById('categoriesModal').classList.add('show');
+}
+
+// Open PIN modal
+function openPinModal() {
+    const security = loadSecuritySettings();
+    
+    // Clear PIN inputs
+    document.querySelectorAll('.pin-input').forEach(input => {
+        input.value = '';
+        input.classList.remove('filled');
+    });
+    
+    // Set toggle states
+    document.getElementById('pinEnabled').checked = security.pinEnabled || false;
+    document.getElementById('pinForTransactions').checked = security.pinForTransactions || false;
+    document.getElementById('autoLock').checked = security.autoLock || false;
+    
+    // Reset validation
+    document.getElementById('pinMessage').textContent = 'Enter your new 4-digit PIN';
+    document.getElementById('pinMessage').className = 'text-sm text-gray-600 dark:text-gray-300';
+    document.getElementById('savePin').disabled = true;
+    
+    document.getElementById('pinModal').classList.add('show');
+}
+
+// Toggle theme
+function toggleTheme() {
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (themeToggle.checked) {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Load theme preference
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (savedTheme === 'dark') {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        themeToggle.checked = true;
+    } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        themeToggle.checked = false;
+    }
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize data
+    initializeSettings();
+    loadTheme();
+    updateBackupStatus();
+    
+    // Set current year
+    document.getElementById('appYear').textContent = new Date().getFullYear();
+    
+    // Event Listeners
+    
+    // Church Profile
+    document.getElementById('churchProfileBtn').addEventListener('click', openChurchProfileModal);
+    document.getElementById('closeChurchModal').addEventListener('click', function() {
+        document.getElementById('churchProfileModal').classList.remove('show');
+    });
+    document.getElementById('cancelChurchProfile').addEventListener('click', function() {
+        document.getElementById('churchProfileModal').classList.remove('show');
+    });
+    document.getElementById('churchProfileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const profile = {
+            parishName: document.getElementById('parishName').value,
+            diocese: document.getElementById('diocese').value,
+            location: document.getElementById('location').value,
+            role: document.getElementById('role').value,
+            currency: document.getElementById('currency').value
+        };
+        
+        saveChurchProfile(profile);
+        document.getElementById('churchProfileModal').classList.remove('show');
+        showToast('Church profile updated successfully', 'success');
+    });
+    
+    // Categories
+    document.getElementById('categoriesBtn').addEventListener('click', openCategoriesModal);
+    document.getElementById('closeCategoriesModal').addEventListener('click', function() {
+        document.getElementById('categoriesModal').classList.remove('show');
+    });
+    
+    document.getElementById('addIncomeCategory').addEventListener('click', function() {
+        const container = document.getElementById('incomeCategories');
+        const newCategory = document.createElement('div');
+        newCategory.className = 'flex items-center gap-2 p-2 border rounded';
+        newCategory.innerHTML = `
+            <input type="text" placeholder="New category" class="flex-1 p-2 border-none bg-transparent" data-type="income">
+            <button class="delete-category text-red-500 hover:text-red-700" data-type="income">
+                <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+        `;
+        container.appendChild(newCategory);
+    });
+    
+    document.getElementById('addExpenseCategory').addEventListener('click', function() {
+        const container = document.getElementById('expenseCategories');
+        const newCategory = document.createElement('div');
+        newCategory.className = 'flex items-center gap-2 p-2 border rounded';
+        newCategory.innerHTML = `
+            <input type="text" placeholder="New category" class="flex-1 p-2 border-none bg-transparent" data-type="expense">
+            <button class="delete-category text-red-500 hover:text-red-700" data-type="expense">
+                <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+        `;
+        container.appendChild(newCategory);
+    });
+    
+    // Handle category deletion
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-category')) {
+            e.target.closest('div').remove();
+        }
+    });
+    
+    document.getElementById('saveCategories').addEventListener('click', function() {
+        const incomeInputs = document.querySelectorAll('input[data-type="income"]');
+        const expenseInputs = document.querySelectorAll('input[data-type="expense"]');
+        
+        const incomeCategories = Array.from(incomeInputs)
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+        
+        const expenseCategories = Array.from(expenseInputs)
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+        
+        const categories = {
+            income: incomeCategories,
+            expense: expenseCategories
+        };
+        
+        saveFinancialCategories(categories);
+        document.getElementById('categoriesModal').classList.remove('show');
+        showToast('Financial categories updated', 'success');
+    });
+    
+    // Security PIN
+    document.getElementById('securityBtn').addEventListener('click', openPinModal);
+    document.getElementById('closePinModal').addEventListener('click', function() {
+        document.getElementById('pinModal').classList.remove('show');
+    });
+    document.getElementById('cancelPin').addEventListener('click', function() {
+        document.getElementById('pinModal').classList.remove('show');
+    });
+    
+    // Setup PIN inputs after modal opens
+    document.getElementById('pinModal').addEventListener('shown', function() {
+        setupPinInputs();
+    });
+    
+    document.getElementById('savePin').addEventListener('click', function() {
+        const pinInputs = document.querySelectorAll('.pin-input');
+        let pin = '';
+        pinInputs.forEach(input => pin += input.value);
+        
+        const security = {
+            pin: pin,
+            pinEnabled: document.getElementById('pinEnabled').checked,
+            pinForTransactions: document.getElementById('pinForTransactions').checked,
+            autoLock: document.getElementById('autoLock').checked
+        };
+        
+        saveSecuritySettings(security);
+        document.getElementById('pinModal').classList.remove('show');
+        showToast('Security settings updated', 'success');
+    });
+    
+    // Backup
+    document.getElementById('backupBtn').addEventListener('click', performBackup);
+    
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('change', toggleTheme);
+    
+    // Data management
+    document.getElementById('exportDataBtn').addEventListener('click', exportData);
+    document.getElementById('importDataBtn').addEventListener('click', importData);
+    document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+    
+    // Notifications
+    document.getElementById('notificationsBtn').addEventListener('click', function() {
+        showToast('No new notifications', 'info');
+    });
+    
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        document.getElementById('logoutModal').classList.add('show');
+    });
+    
+    document.getElementById('cancelLogout').addEventListener('click', function() {
+        document.getElementById('logoutModal').classList.remove('show');
+    });
+    
+    document.getElementById('confirmLogout').addEventListener('click', function() {
+        // In a real app, this would clear authentication tokens
+        showToast('Logged out successfully', 'success');
+        setTimeout(() => {
+            window.location.href = 'login.html'; // Redirect to login page
+        }, 1000);
+    });
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', function(e) {
+        const modals = ['churchProfileModal', 'categoriesModal', 'pinModal', 'logoutModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modals = ['churchProfileModal', 'categoriesModal', 'pinModal', 'logoutModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            performBackup();
+            showToast('Backup initiated with Ctrl+S', 'info');
+        }
+    });
+    
+    // Show welcome message
+    setTimeout(() => {
+        const settings = loadSettings();
+        if (settings.churchProfile?.parishName) {
+            showToast(`Welcome to ${settings.churchProfile.parishName} settings`, 'info');
+        }
+    }, 1000);
+    
+    // Auto-backup check (every hour)
+    setInterval(() => {
+        const settings = loadSettings();
+        if (settings.backup?.autoBackup) {
+            const lastBackup = new Date(settings.backup.lastBackup || 0);
+            const now = new Date();
+            const hoursSinceBackup = (now - lastBackup) / (1000 * 60 * 60);
+            
+            if (hoursSinceBackup >= 24) { // Auto-backup every 24 hours
+                showToast('Auto-backup scheduled', 'info');
+                setTimeout(performBackup, 5000);
+            }
+        }
+    }, 3600000); // Check every hour
+});
+</script>
 </body>
 </html>

@@ -38,9 +38,139 @@
         body {
             font-family: 'Lexend', sans-serif;
         }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            background-color: #10b981;
+        }
+        .toast.info {
+            background-color: #3b82f6;
+        }
+        .toast.warning {
+            background-color: #f59e0b;
+        }
+        .toast.error {
+            background-color: #ef4444;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .dark .modal-content {
+            background: #1a2e1a;
+            color: white;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #1bda2b;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Avatar colors based on status */
+        .avatar-active {
+            background-color: rgba(27, 218, 43, 0.1) !important;
+            color: #1bda2b !important;
+        }
+        .avatar-pending {
+            background-color: rgba(212, 175, 55, 0.1) !important;
+            color: #D4AF37 !important;
+        }
+        .avatar-inactive {
+            background-color: rgba(107, 114, 128, 0.1) !important;
+            color: #6b7280 !important;
+        }
+        
+        /* Form animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        #addMemberFormContainer {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse {
+            animation: pulse 1s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark min-h-screen">
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- Member Details Modal -->
+    <div id="memberModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold" id="modalTitle">Member Details</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="modalContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
 <div class="flex h-screen overflow-hidden">
 <!-- Side Navigation -->
 <aside class="w-72 bg-white dark:bg-[#1a2e1a] border-r border-gray-200 dark:border-gray-800 flex flex-col shrink-0">
@@ -76,7 +206,7 @@
 </a>
 
 <!-- Record New Transaction Link -->
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-white/5 transition-colors" href="index.html">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-background-light dark:hover:bg-white/5 transition-colors" href="transactions-new.html">
 <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">add_circle</span>
 <span class="text-[#111812] dark:text-gray-200 font-medium text-sm">Record New</span>
 </a>
@@ -111,17 +241,17 @@
 <div class="flex items-center justify-between max-w-6xl mx-auto w-full">
 <div>
 <h2 class="text-2xl font-bold text-[#111812] dark:text-white tracking-tight">Member Directory</h2>
-<p class="text-sm text-[#638866]">Managing 142 active members</p>
+<p class="text-sm text-[#638866]" id="memberCount">Managing 142 active members</p>
 </div>
 <div class="flex items-center gap-3">
 <button class="bg-[#f0f4f1] dark:bg-white/5 p-2.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
 <span class="material-symbols-outlined">notifications</span>
 </button>
-<!-- Add New Member Button - Could link to a new member form -->
-<a href="members-new.html" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all">
+<!-- Add New Member Button - Opens inline form -->
+<button id="addMemberBtn" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all">
 <span class="material-symbols-outlined">person_add</span>
 <span>Add New Member</span>
-</a>
+</button>
 </div>
 </div>
 </header>
@@ -131,149 +261,1031 @@
 <div class="bg-white dark:bg-[#1a2e1a] p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row gap-4">
 <div class="relative flex-1">
 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#638866]">search</span>
-<input class="w-full bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl pl-12 pr-4 py-3 text-base focus:ring-2 focus:ring-primary/50 dark:text-white placeholder:text-gray-400" placeholder="Search by name, ID, or phone..." type="text"/>
+<input id="searchInput" class="w-full bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl pl-12 pr-4 py-3 text-base focus:ring-2 focus:ring-primary/50 dark:text-white placeholder:text-gray-400" placeholder="Search by name, ID, or phone..." type="text"/>
 </div>
 <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-<button class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl whitespace-nowrap font-medium text-sm">
+<button id="filterAll" class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl whitespace-nowrap font-medium text-sm">
 <span>All Members</span>
 <span class="material-symbols-outlined text-lg">expand_more</span>
 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded-xl whitespace-nowrap font-medium text-sm border border-transparent hover:border-gray-200">
+<button id="filterActive" class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded-xl whitespace-nowrap font-medium text-sm border border-transparent hover:border-gray-200">
 <span>Active</span>
 <span class="material-symbols-outlined text-lg">expand_more</span>
 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded-xl whitespace-nowrap font-medium text-sm border border-transparent hover:border-gray-200">
+<button id="filterPending" class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded-xl whitespace-nowrap font-medium text-sm border border-transparent hover:border-gray-200">
+<span>Pending</span>
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+<button id="filterNew" class="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded-xl whitespace-nowrap font-medium text-sm border border-transparent hover:border-gray-200">
 <span>New Arrivals</span>
 <span class="material-symbols-outlined text-lg">expand_more</span>
 </button>
 </div>
 </div>
-<!-- Alphabetical List -->
-<div class="flex flex-col gap-8">
-<!-- Section A -->
-<div>
-<div class="flex items-center gap-4 px-4 mb-4">
-<h3 class="text-xl font-bold text-accent-gold">A</h3>
-<div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
+
+<!-- Inline Add Member Form -->
+<div id="addMemberFormContainer" class="hidden bg-white dark:bg-[#1a2e1a] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-[#111812] dark:text-white">Add New Member</h3>
+            <button id="closeAddMemberForm" class="text-gray-500 hover:text-gray-700">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form id="inlineAddMemberForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">First Name *</label>
+                    <input type="text" id="inlineFirstName" class="w-full p-3 bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Last Name *</label>
+                    <input type="text" id="inlineLastName" class="w-full p-3 bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl" required>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Phone Number *</label>
+                    <input type="tel" id="inlinePhone" class="w-full p-3 bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl" placeholder="+254" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="inlineEmail" class="w-full p-3 bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl" placeholder="optional">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Status</label>
+                <div class="flex gap-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="inlineStatus" value="active" class="hidden peer" checked>
+                        <div class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary">Active</div>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="inlineStatus" value="pending" class="hidden peer">
+                        <div class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-yellow-500 peer-checked:bg-yellow-500/10 peer-checked:text-yellow-500">Pending</div>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="inlineStatus" value="inactive" class="hidden peer">
+                        <div class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-gray-500 peer-checked:bg-gray-500/10 peer-checked:text-gray-500">Inactive</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Notes (Optional)</label>
+                <textarea id="inlineNotes" class="w-full p-3 bg-[#f0f4f1] dark:bg-white/5 border-none rounded-xl" rows="2" placeholder="Any additional information..."></textarea>
+            </div>
+            
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancelInlineAdd" class="px-6 py-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
+                <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90">
+                    <span class="material-symbols-outlined mr-2">person_add</span>
+                    Add Member
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<div class="grid grid-cols-1 gap-3">
-<!-- Member Row -->
-<div class="bg-white dark:bg-[#1a2e1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between hover:shadow-md transition-shadow group">
-<div class="flex items-center gap-4">
-<div class="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">AB</div>
-<div>
-<h4 class="text-lg font-bold text-[#111812] dark:text-white group-hover:text-primary transition-colors">Agatha Barnaby</h4>
-<p class="text-sm text-[#638866]">Member ID: <span class="font-mono font-medium">MU-2024-0012</span></p>
+
+<!-- Loading State -->
+<div id="loadingState" class="hidden flex flex-col items-center justify-center py-12">
+<div class="spinner mb-4"></div>
+<p class="text-gray-500 dark:text-gray-400">Loading members...</p>
 </div>
+
+<!-- Alphabetical List Container -->
+<div id="membersContainer" class="flex flex-col gap-8">
+<!-- Members will be loaded here dynamically -->
 </div>
-<div class="flex items-center gap-4">
-<div class="hidden md:flex flex-col text-right px-4 border-r border-gray-100 dark:border-gray-800">
-<p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Status</p>
-<span class="text-primary text-sm font-bold flex items-center justify-end gap-1">
-<span class="size-2 bg-primary rounded-full"></span> Active
-                                        </span>
+
+<!-- Empty State -->
+<div id="emptyState" class="hidden flex flex-col items-center justify-center py-12 text-center">
+<span class="material-symbols-outlined text-5xl text-gray-400 mb-4">group_off</span>
+<p class="text-xl font-bold text-gray-600 dark:text-gray-300 mb-2">No members found</p>
+<p class="text-gray-500 dark:text-gray-400">Try adjusting your search or add new members.</p>
 </div>
-<button class="flex items-center gap-2 bg-[#f0f4f1] dark:bg-white/5 hover:bg-primary/20 hover:text-primary transition-all px-5 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300">
-<span class="material-symbols-outlined text-lg">history</span>
-<span>Contribution History</span>
-</button>
-</div>
-</div>
-<!-- Member Row -->
-<div class="bg-white dark:bg-[#1a2e1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between hover:shadow-md transition-shadow group">
-<div class="flex items-center gap-4">
-<div class="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">AM</div>
-<div>
-<h4 class="text-lg font-bold text-[#111812] dark:text-white group-hover:text-primary transition-colors">Alice Mbeki</h4>
-<p class="text-sm text-[#638866]">Member ID: <span class="font-mono font-medium">MU-2024-0045</span></p>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="hidden md:flex flex-col text-right px-4 border-r border-gray-100 dark:border-gray-800">
-<p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Status</p>
-<span class="text-primary text-sm font-bold flex items-center justify-end gap-1">
-<span class="size-2 bg-primary rounded-full"></span> Active
-                                        </span>
-</div>
-<button class="flex items-center gap-2 bg-[#f0f4f1] dark:bg-white/5 hover:bg-primary/20 hover:text-primary transition-all px-5 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300">
-<span class="material-symbols-outlined text-lg">history</span>
-<span>Contribution History</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Section B -->
-<div>
-<div class="flex items-center gap-4 px-4 mb-4">
-<h3 class="text-xl font-bold text-accent-gold">B</h3>
-<div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
-</div>
-<div class="grid grid-cols-1 gap-3">
-<!-- Member Row -->
-<div class="bg-white dark:bg-[#1a2e1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between hover:shadow-md transition-shadow group">
-<div class="flex items-center gap-4">
-<div class="size-14 rounded-full bg-accent-gold/10 flex items-center justify-center text-accent-gold font-bold text-lg">BW</div>
-<div>
-<h4 class="text-lg font-bold text-[#111812] dark:text-white group-hover:text-primary transition-colors">Beatrice Wentworth</h4>
-<p class="text-sm text-[#638866]">Member ID: <span class="font-mono font-medium">MU-2023-0192</span></p>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="hidden md:flex flex-col text-right px-4 border-r border-gray-100 dark:border-gray-800">
-<p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Status</p>
-<span class="text-amber-500 text-sm font-bold flex items-center justify-end gap-1">
-<span class="size-2 bg-amber-500 rounded-full"></span> Pending Dues
-                                        </span>
-</div>
-<button class="flex items-center gap-2 bg-[#f0f4f1] dark:bg-white/5 hover:bg-primary/20 hover:text-primary transition-all px-5 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300">
-<span class="material-symbols-outlined text-lg">history</span>
-<span>Contribution History</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Section M -->
-<div>
-<div class="flex items-center gap-4 px-4 mb-4">
-<h3 class="text-xl font-bold text-accent-gold">M</h3>
-<div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
-</div>
-<div class="grid grid-cols-1 gap-3">
-<!-- Member Row -->
-<div class="bg-white dark:bg-[#1a2e1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between hover:shadow-md transition-shadow group">
-<div class="flex items-center gap-4">
-<div class="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">MT</div>
-<div>
-<h4 class="text-lg font-bold text-[#111812] dark:text-white group-hover:text-primary transition-colors">Margaret Thompson</h4>
-<p class="text-sm text-[#638866]">Member ID: <span class="font-mono font-medium">MU-2024-0089</span></p>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="hidden md:flex flex-col text-right px-4 border-r border-gray-100 dark:border-gray-800">
-<p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Status</p>
-<span class="text-primary text-sm font-bold flex items-center justify-end gap-1">
-<span class="size-2 bg-primary rounded-full"></span> Active
-                                        </span>
-</div>
-<button class="flex items-center gap-2 bg-[#f0f4f1] dark:bg-white/5 hover:bg-primary/20 hover:text-primary transition-all px-5 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300">
-<span class="material-symbols-outlined text-lg">history</span>
-<span>Contribution History</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</div>
+
 <!-- Load More / Pagination -->
 <div class="flex justify-center py-6">
-<button class="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 font-bold rounded-xl hover:bg-gray-50 transition-colors">
+<button id="loadMoreBtn" class="px-8 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 font-bold rounded-xl hover:bg-gray-50 transition-colors">
                         Load More Members
                     </button>
 </div>
 </div>
 </main>
 </div>
+
+<script>
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">
+                ${type === 'success' ? 'check_circle' : 
+                  type === 'warning' ? 'warning' : 
+                  type === 'error' ? 'error' : 'info'}
+            </span>
+            <span>${message}</span>
+        </div>
+    `;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Initialize members data in localStorage
+function initializeMembersData() {
+    if (!localStorage.getItem('mothersUnionMembers')) {
+        const sampleMembers = [
+            {
+                id: 1,
+                firstName: "Agatha",
+                lastName: "Barnaby",
+                memberId: "MU-2024-0012",
+                phone: "+254712345678",
+                email: "agatha.b@example.com",
+                joinDate: "2024-01-15",
+                status: "active",
+                avatarInitials: "AB",
+                totalContributions: 15000,
+                lastContribution: "2023-12-15",
+                notes: "Regular contributor, attends Sunday services"
+            },
+            {
+                id: 2,
+                firstName: "Alice",
+                lastName: "Mbeki",
+                memberId: "MU-2024-0045",
+                phone: "+254723456789",
+                email: "alice.m@example.com",
+                joinDate: "2024-02-20",
+                status: "active",
+                avatarInitials: "AM",
+                totalContributions: 8000,
+                lastContribution: "2023-12-10",
+                notes: "New member, very active"
+            },
+            {
+                id: 3,
+                firstName: "Beatrice",
+                lastName: "Wentworth",
+                memberId: "MU-2023-0192",
+                phone: "+254734567890",
+                email: "beatrice.w@example.com",
+                joinDate: "2023-11-05",
+                status: "pending",
+                avatarInitials: "BW",
+                totalContributions: 5000,
+                lastContribution: "2023-11-15",
+                notes: "Has outstanding dues"
+            },
+            {
+                id: 4,
+                firstName: "Margaret",
+                lastName: "Thompson",
+                memberId: "MU-2024-0089",
+                phone: "+254745678901",
+                email: "margaret.t@example.com",
+                joinDate: "2024-03-10",
+                status: "active",
+                avatarInitials: "MT",
+                totalContributions: 12000,
+                lastContribution: "2023-12-20",
+                notes: "Senior member, treasurer committee"
+            },
+            {
+                id: 5,
+                firstName: "Catherine",
+                lastName: "Johnson",
+                memberId: "MU-2023-0256",
+                phone: "+254756789012",
+                email: "catherine.j@example.com",
+                joinDate: "2023-10-15",
+                status: "inactive",
+                avatarInitials: "CJ",
+                totalContributions: 0,
+                lastContribution: null,
+                notes: "Moved to another parish"
+            }
+        ];
+        localStorage.setItem('mothersUnionMembers', JSON.stringify(sampleMembers));
+    }
+}
+
+// Load members from localStorage
+function loadMembers() {
+    return JSON.parse(localStorage.getItem('mothersUnionMembers') || '[]');
+}
+
+// Save members to localStorage
+function saveMembers(members) {
+    localStorage.setItem('mothersUnionMembers', JSON.stringify(members));
+}
+
+// Generate member ID
+function generateMemberId() {
+    const members = loadMembers();
+    const year = new Date().getFullYear();
+    const sequence = String(members.length + 1).padStart(4, '0');
+    return `MU-${year}-${sequence}`;
+}
+
+// Get initials from name
+function getInitials(firstName, lastName) {
+    return (firstName[0] + lastName[0]).toUpperCase();
+}
+
+// Format date
+function formatDate(dateString) {
+    if (!dateString) return 'Never';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+// Format currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-KE', {
+        style: 'currency',
+        currency: 'KES',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount).replace('KES', 'KSH');
+}
+
+// Get status badge HTML
+function getStatusBadge(status) {
+    const statusMap = {
+        'active': { class: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300', text: 'Active', icon: 'check_circle' },
+        'pending': { class: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300', text: 'Pending Dues', icon: 'pending' },
+        'inactive': { class: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300', text: 'Inactive', icon: 'cancel' }
+    };
+    
+    const badge = statusMap[status] || statusMap['inactive'];
+    return `<span class="px-3 py-1 ${badge.class} text-xs font-bold rounded-full flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">${badge.icon}</span>
+                ${badge.text}
+            </span>`;
+}
+
+// Get avatar class based on status
+function getAvatarClass(status) {
+    const classMap = {
+        'active': 'avatar-active',
+        'pending': 'avatar-pending',
+        'inactive': 'avatar-inactive'
+    };
+    return classMap[status] || 'avatar-inactive';
+}
+
+// Filter members based on current filters
+function filterMembers(members, searchTerm = '', filterType = 'all') {
+    let filtered = [...members];
+    
+    // Filter by search term
+    if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(member => 
+            member.firstName.toLowerCase().includes(term) ||
+            member.lastName.toLowerCase().includes(term) ||
+            member.memberId.toLowerCase().includes(term) ||
+            member.phone.includes(term) ||
+            (member.email && member.email.toLowerCase().includes(term))
+        );
+    }
+    
+    // Filter by type
+    if (filterType !== 'all') {
+        filtered = filtered.filter(member => {
+            if (filterType === 'active') return member.status === 'active';
+            if (filterType === 'pending') return member.status === 'pending';
+            if (filterType === 'new') {
+                const joinDate = new Date(member.joinDate);
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                return joinDate >= thirtyDaysAgo;
+            }
+            return true;
+        });
+    }
+    
+    return filtered;
+}
+
+// Group members by first letter of last name
+function groupMembersByLetter(members) {
+    const groups = {};
+    
+    members.forEach(member => {
+        const firstLetter = member.lastName[0].toUpperCase();
+        if (!groups[firstLetter]) {
+            groups[firstLetter] = [];
+        }
+        groups[firstLetter].push(member);
+    });
+    
+    // Sort letters alphabetically
+    const sortedGroups = {};
+    Object.keys(groups).sort().forEach(key => {
+        // Sort members within each group by last name
+        groups[key].sort((a, b) => a.lastName.localeCompare(b.lastName));
+        sortedGroups[key] = groups[key];
+    });
+    
+    return sortedGroups;
+}
+
+// Render members
+function renderMembers(members) {
+    const container = document.getElementById('membersContainer');
+    const emptyState = document.getElementById('emptyState');
+    const loadingState = document.getElementById('loadingState');
+    const addMemberForm = document.getElementById('addMemberFormContainer');
+    
+    // Hide loading and add form, show container
+    loadingState.classList.add('hidden');
+    addMemberForm.classList.add('hidden');
+    
+    if (members.length === 0) {
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+    
+    // Group members by letter
+    const groupedMembers = groupMembersByLetter(members);
+    
+    let html = '';
+    
+    for (const [letter, groupMembers] of Object.entries(groupedMembers)) {
+        html += `
+            <div>
+                <div class="flex items-center gap-4 px-4 mb-4">
+                    <h3 class="text-xl font-bold text-accent-gold">${letter}</h3>
+                    <div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+        `;
+        
+        groupMembers.forEach(member => {
+            const fullName = `${member.firstName} ${member.lastName}`;
+            const avatarClass = getAvatarClass(member.status);
+            
+            html += `
+                <div class="member-card bg-white dark:bg-[#1a2e1a] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between hover:shadow-md transition-shadow group cursor-pointer" data-id="${member.id}">
+                    <div class="flex items-center gap-4">
+                        <div class="size-14 rounded-full flex items-center justify-center font-bold text-lg ${avatarClass}">
+                            ${member.avatarInitials}
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-[#111812] dark:text-white group-hover:text-primary transition-colors">${fullName}</h4>
+                            <p class="text-sm text-[#638866]">Member ID: <span class="font-mono font-medium">${member.memberId}</span></p>
+                            <div class="mt-1 flex items-center gap-2">
+                                ${getStatusBadge(member.status)}
+                                <span class="text-xs text-gray-500">Joined ${formatDate(member.joinDate)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="hidden md:flex flex-col text-right px-4 border-r border-gray-100 dark:border-gray-800">
+                            <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Contributions</p>
+                            <span class="text-primary text-sm font-bold">${formatCurrency(member.totalContributions)}</span>
+                        </div>
+                        <button class="view-history flex items-center gap-2 bg-[#f0f4f1] dark:bg-white/5 hover:bg-primary/20 hover:text-primary transition-all px-5 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300" data-id="${member.id}">
+                            <span class="material-symbols-outlined text-lg">history</span>
+                            <span>Contribution History</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+    
+    // Add event listeners to member cards and buttons
+    document.querySelectorAll('.member-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.view-history')) {
+                const memberId = parseInt(card.dataset.id);
+                showMemberDetails(memberId);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.view-history').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const memberId = parseInt(btn.dataset.id);
+            showContributionHistory(memberId);
+        });
+    });
+}
+
+// Update member count
+function updateMemberCount(members) {
+    const filtered = filterMembers(members, 
+        document.getElementById('searchInput').value,
+        getActiveFilter()
+    );
+    
+    const totalMembers = members.length;
+    const filteredCount = filtered.length;
+    
+    let countText = `Managing ${totalMembers} members`;
+    if (filteredCount !== totalMembers) {
+        countText += ` (${filteredCount} filtered)`;
+    }
+    
+    document.getElementById('memberCount').textContent = countText;
+}
+
+// Get active filter
+function getActiveFilter() {
+    const filterButtons = ['filterAll', 'filterActive', 'filterPending', 'filterNew'];
+    
+    for (const buttonId of filterButtons) {
+        const btn = document.getElementById(buttonId);
+        if (btn.classList.contains('bg-primary/10') && btn.classList.contains('text-primary')) {
+            return buttonId.replace('filter', '').toLowerCase();
+        }
+    }
+    return 'all';
+}
+
+// Show member details modal
+function showMemberDetails(memberId) {
+    const members = loadMembers();
+    const member = members.find(m => m.id === memberId);
+    
+    if (!member) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    
+    const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+    const memberTransactions = transactions.filter(tx => 
+        tx.source.toLowerCase().includes(member.firstName.toLowerCase()) ||
+        tx.source.toLowerCase().includes(member.lastName.toLowerCase())
+    );
+    
+    const totalContributions = memberTransactions.reduce((sum, tx) => {
+        return sum + (tx.type === 'money_in' ? parseFloat(tx.amount) : 0);
+    }, 0);
+    
+    document.getElementById('modalTitle').textContent = `${member.firstName} ${member.lastName}`;
+    document.getElementById('modalContent').innerHTML = `
+        <div class="space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="size-20 rounded-full ${getAvatarClass(member.status)} flex items-center justify-center font-bold text-2xl">
+                    ${member.avatarInitials}
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-xl font-bold">${member.firstName} ${member.lastName}</h4>
+                    <p class="text-gray-500 dark:text-gray-400">${member.memberId}</p>
+                    <div class="mt-2">${getStatusBadge(member.status)}</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Phone</p>
+                    <p class="font-medium">${member.phone}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                    <p class="font-medium">${member.email || 'Not provided'}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Join Date</p>
+                    <p class="font-medium">${formatDate(member.joinDate)}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Contributions</p>
+                    <p class="font-bold text-primary">${formatCurrency(totalContributions)}</p>
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Notes</p>
+                <p class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">${member.notes || 'No notes available'}</p>
+            </div>
+            
+            <div>
+                <h5 class="font-bold mb-3">Recent Transactions</h5>
+                ${memberTransactions.length > 0 ? 
+                    `<div class="space-y-2 max-h-60 overflow-y-auto">
+                        ${memberTransactions.slice(0, 5).map(tx => `
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/30 rounded-lg">
+                                <div>
+                                    <p class="font-medium">${tx.category}</p>
+                                    <p class="text-sm text-gray-500">${formatDate(tx.date)}</p>
+                                </div>
+                                <span class="font-bold ${tx.type === 'money_in' ? 'text-primary' : 'text-accent-gold'}">
+                                    ${tx.type === 'money_in' ? '+' : '-'}${formatCurrency(parseFloat(tx.amount))}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>` : 
+                    '<p class="text-gray-500 text-center py-4">No transactions found</p>'
+                }
+            </div>
+            
+            <div class="flex justify-end gap-3 pt-4 border-t">
+                <button id="editMemberBtn" data-id="${member.id}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                    Edit Member
+                </button>
+                <button id="deleteMemberBtn" data-id="${member.id}" class="px-4 py-2 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50">
+                    Delete Member
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Show modal
+    document.getElementById('memberModal').classList.add('show');
+    
+    // Add event listeners to modal buttons
+    document.getElementById('editMemberBtn').addEventListener('click', () => {
+        editMember(memberId);
+    });
+    
+    document.getElementById('deleteMemberBtn').addEventListener('click', () => {
+        if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}? This action cannot be undone.`)) {
+            deleteMember(memberId);
+        }
+    });
+}
+
+// Show contribution history
+function showContributionHistory(memberId) {
+    const members = loadMembers();
+    const member = members.find(m => m.id === memberId);
+    
+    if (!member) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    
+    const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+    const memberTransactions = transactions.filter(tx => 
+        tx.source.toLowerCase().includes(member.firstName.toLowerCase()) ||
+        tx.source.toLowerCase().includes(member.lastName.toLowerCase())
+    ).sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const totalIncome = memberTransactions
+        .filter(tx => tx.type === 'money_in')
+        .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+    
+    document.getElementById('modalTitle').textContent = `${member.firstName} ${member.lastName}'s Contributions`;
+    document.getElementById('modalContent').innerHTML = `
+        <div class="space-y-6">
+            <div class="bg-primary/10 p-4 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Contributions</p>
+                        <p class="text-2xl font-bold">${formatCurrency(totalIncome)}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Transactions</p>
+                        <p class="text-2xl font-bold">${memberTransactions.length}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h5 class="font-bold mb-3">Transaction History</h5>
+                ${memberTransactions.length > 0 ? 
+                    `<div class="space-y-2 max-h-96 overflow-y-auto">
+                        ${memberTransactions.map(tx => `
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/30 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/50">
+                                <div class="flex-1">
+                                    <p class="font-medium">${tx.category}</p>
+                                    <p class="text-sm text-gray-500">${tx.description || 'No description'}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${formatDate(tx.date)} • ${tx.method}</p>
+                                </div>
+                                <span class="font-bold ${tx.type === 'money_in' ? 'text-primary' : 'text-accent-gold'} ml-4">
+                                    ${tx.type === 'money_in' ? '+' : '-'}${formatCurrency(parseFloat(tx.amount))}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>` : 
+                    '<p class="text-gray-500 text-center py-8">No contribution history available</p>'
+                }
+            </div>
+            
+            <div class="flex justify-end pt-4 border-t">
+                <button id="exportHistoryBtn" data-id="${member.id}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                    <span class="material-symbols-outlined text-sm mr-2">download</span>
+                    Export History
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Show modal
+    document.getElementById('memberModal').classList.add('show');
+    
+    // Add event listener to export button
+    document.getElementById('exportHistoryBtn').addEventListener('click', () => {
+        exportMemberHistory(memberId);
+    });
+}
+
+// Show inline add member form
+function showInlineAddMemberForm() {
+    const formContainer = document.getElementById('addMemberFormContainer');
+    const membersContainer = document.getElementById('membersContainer');
+    const emptyState = document.getElementById('emptyState');
+    
+    // Hide members container and empty state
+    membersContainer.classList.add('hidden');
+    emptyState.classList.add('hidden');
+    
+    // Show the form
+    formContainer.classList.remove('hidden');
+    
+    // Scroll to form
+    formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('inlineFirstName').focus();
+    }, 100);
+}
+
+// Close inline add member form
+function closeInlineAddMemberForm() {
+    const formContainer = document.getElementById('addMemberFormContainer');
+    formContainer.classList.add('hidden');
+    refreshMembers();
+}
+
+// Handle inline form submission
+function handleInlineFormSubmit(e) {
+    e.preventDefault();
+    
+    const firstName = document.getElementById('inlineFirstName').value.trim();
+    const lastName = document.getElementById('inlineLastName').value.trim();
+    const phone = document.getElementById('inlinePhone').value.trim();
+    const email = document.getElementById('inlineEmail').value.trim() || null;
+    const status = document.querySelector('input[name="inlineStatus"]:checked').value;
+    const notes = document.getElementById('inlineNotes').value.trim() || null;
+    
+    // Validate required fields
+    if (!firstName || !lastName || !phone) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    // Validate phone number format (basic validation)
+    if (!phone.startsWith('+254') || phone.length < 13) {
+        showToast('Please enter a valid Kenyan phone number (e.g., +254712345678)', 'error');
+        return;
+    }
+    
+    const members = loadMembers();
+    const newMember = {
+        id: Date.now(),
+        firstName: firstName,
+        lastName: lastName,
+        memberId: generateMemberId(),
+        phone: phone,
+        email: email,
+        joinDate: new Date().toISOString().split('T')[0],
+        status: status,
+        avatarInitials: getInitials(firstName, lastName),
+        totalContributions: 0,
+        lastContribution: null,
+        notes: notes
+    };
+    
+    members.push(newMember);
+    saveMembers(members);
+    
+    // Reset form
+    document.getElementById('inlineAddMemberForm').reset();
+    
+    // Close form
+    closeInlineAddMemberForm();
+    
+    // Show success message
+    showToast(`${newMember.firstName} ${newMember.lastName} added successfully!`, 'success');
+    
+    // Scroll to the new member (they'll be in the alphabetical list)
+    setTimeout(() => {
+        const memberCard = document.querySelector(`[data-id="${newMember.id}"]`);
+        if (memberCard) {
+            memberCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            memberCard.classList.add('animate-pulse');
+            setTimeout(() => memberCard.classList.remove('animate-pulse'), 2000);
+        }
+    }, 500);
+}
+
+// Edit member
+function editMember(memberId) {
+    const members = loadMembers();
+    const member = members.find(m => m.id === memberId);
+    
+    if (!member) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    
+    document.getElementById('modalTitle').textContent = `Edit ${member.firstName} ${member.lastName}`;
+    document.getElementById('modalContent').innerHTML = `
+        <form id="editMemberForm" class="space-y-4">
+            <input type="hidden" id="editId" value="${member.id}">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">First Name *</label>
+                    <input type="text" id="editFirstName" class="w-full p-2 border rounded" value="${member.firstName}" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Last Name *</label>
+                    <input type="text" id="editLastName" class="w-full p-2 border rounded" value="${member.lastName}" required>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Phone Number *</label>
+                <input type="tel" id="editPhone" class="w-full p-2 border rounded" value="${member.phone}" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Email</label>
+                <input type="email" id="editEmail" class="w-full p-2 border rounded" value="${member.email || ''}">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Status</label>
+                <select id="editStatus" class="w-full p-2 border rounded">
+                    <option value="active" ${member.status === 'active' ? 'selected' : ''}>Active</option>
+                    <option value="pending" ${member.status === 'pending' ? 'selected' : ''}>Pending Dues</option>
+                    <option value="inactive" ${member.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Notes</label>
+                <textarea id="editNotes" class="w-full p-2 border rounded" rows="3">${member.notes || ''}</textarea>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancelEdit" class="px-4 py-2 border rounded hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    `;
+    
+    document.getElementById('memberModal').classList.add('show');
+    
+    // Form submission
+    document.getElementById('editMemberForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const memberIndex = members.findIndex(m => m.id === memberId);
+        if (memberIndex === -1) {
+            showToast('Member not found', 'error');
+            return;
+        }
+        
+        members[memberIndex] = {
+            ...members[memberIndex],
+            firstName: document.getElementById('editFirstName').value.trim(),
+            lastName: document.getElementById('editLastName').value.trim(),
+            phone: document.getElementById('editPhone').value.trim(),
+            email: document.getElementById('editEmail').value.trim() || null,
+            status: document.getElementById('editStatus').value,
+            avatarInitials: getInitials(
+                document.getElementById('editFirstName').value.trim(),
+                document.getElementById('editLastName').value.trim()
+            ),
+            notes: document.getElementById('editNotes').value.trim() || null
+        };
+        
+        saveMembers(members);
+        
+        document.getElementById('memberModal').classList.remove('show');
+        showToast('Member updated successfully', 'success');
+        refreshMembers();
+    });
+    
+    document.getElementById('cancelEdit').addEventListener('click', () => {
+        document.getElementById('memberModal').classList.remove('show');
+    });
+}
+
+// Delete member
+function deleteMember(memberId) {
+    let members = loadMembers();
+    const member = members.find(m => m.id === memberId);
+    
+    if (!member) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    
+    const originalLength = members.length;
+    members = members.filter(m => m.id !== memberId);
+    
+    if (members.length < originalLength) {
+        saveMembers(members);
+        showToast(`${member.firstName} ${member.lastName} deleted successfully`, 'success');
+        document.getElementById('memberModal').classList.remove('show');
+        refreshMembers();
+    } else {
+        showToast('Failed to delete member', 'error');
+    }
+}
+
+// Export member history
+function exportMemberHistory(memberId) {
+    const members = loadMembers();
+    const member = members.find(m => m.id === memberId);
+    
+    if (!member) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    
+    const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
+    const memberTransactions = transactions.filter(tx => 
+        tx.source.toLowerCase().includes(member.firstName.toLowerCase()) ||
+        tx.source.toLowerCase().includes(member.lastName.toLowerCase())
+    );
+    
+    if (memberTransactions.length === 0) {
+        showToast('No transactions to export', 'warning');
+        return;
+    }
+    
+    // Create CSV content
+    let csvContent = "Date,Category,Description,Amount,Type,Method\n";
+    memberTransactions.forEach(tx => {
+        csvContent += `"${formatDate(tx.date)}","${tx.category}","${tx.description || ''}","${tx.amount}","${tx.type === 'money_in' ? 'Income' : 'Expense'}","${tx.method}"\n`;
+    });
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `member-${member.memberId}-history-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showToast(`Exported ${memberTransactions.length} transactions`, 'success');
+}
+
+// Refresh members display
+function refreshMembers() {
+    const members = loadMembers();
+    const searchTerm = document.getElementById('searchInput').value;
+    const filterType = getActiveFilter();
+    const filtered = filterMembers(members, searchTerm, filterType);
+    
+    renderMembers(filtered);
+    updateMemberCount(members);
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize data
+    initializeMembersData();
+    
+    // Initial render
+    refreshMembers();
+    
+    // Event Listeners
+    
+    // Search input with debounce
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => refreshMembers(), 300);
+    });
+    
+    // Filter buttons
+    const filterButtons = ['filterAll', 'filterActive', 'filterPending', 'filterNew'];
+    filterButtons.forEach(buttonId => {
+        document.getElementById(buttonId).addEventListener('click', function() {
+            // Remove active class from all filter buttons
+            filterButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
+                btn.classList.add('bg-gray-50', 'dark:bg-white/5', 'text-gray-600', 'dark:text-gray-400', 'border-transparent');
+            });
+            
+            // Add active class to clicked button
+            this.classList.remove('bg-gray-50', 'dark:bg-white/5', 'text-gray-600', 'dark:text-gray-400', 'border-transparent');
+            this.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
+            
+            refreshMembers();
+        });
+    });
+    
+    // Add member button - shows inline form
+    document.getElementById('addMemberBtn').addEventListener('click', showInlineAddMemberForm);
+    
+    // Inline form event listeners
+    document.getElementById('closeAddMemberForm').addEventListener('click', closeInlineAddMemberForm);
+    document.getElementById('cancelInlineAdd').addEventListener('click', closeInlineAddMemberForm);
+    document.getElementById('inlineAddMemberForm').addEventListener('submit', handleInlineFormSubmit);
+    
+    // Load more button
+    document.getElementById('loadMoreBtn').addEventListener('click', function() {
+        showToast('Loading more members...', 'info');
+        // In a real app, this would load more data from server
+        setTimeout(() => showToast('More members loaded', 'success'), 1000);
+    });
+    
+    // Modal close button
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('memberModal').classList.remove('show');
+    });
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', function(e) {
+        const modals = ['memberModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+        
+        // Also check for inline form
+        const formContainer = document.getElementById('addMemberFormContainer');
+        if (e.target === formContainer) {
+            closeInlineAddMemberForm();
+        }
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'n') {
+            e.preventDefault();
+            showInlineAddMemberForm();
+        }
+        if (e.ctrlKey && e.key === 'f') {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+        if (e.key === 'Escape') {
+            // Close modal if open
+            if (document.getElementById('memberModal').classList.contains('show')) {
+                document.getElementById('memberModal').classList.remove('show');
+            }
+            // Close inline form if open
+            const formContainer = document.getElementById('addMemberFormContainer');
+            if (!formContainer.classList.contains('hidden')) {
+                closeInlineAddMemberForm();
+            }
+        }
+    });
+    
+    // Auto-refresh every minute
+    setInterval(refreshMembers, 60000);
+    
+    // Show welcome message
+    setTimeout(() => {
+        const members = loadMembers();
+        if (members.length > 0) {
+            showToast(`Welcome! ${members.length} members loaded`, 'info');
+        }
+    }, 1000);
+    
+    // Display keyboard shortcuts help on first visit
+    if (!localStorage.getItem('membersHelpShown')) {
+        setTimeout(() => {
+            showToast('Tip: Use Ctrl+N to add new member, Ctrl+F to search', 'info');
+            localStorage.setItem('membersHelpShown', 'true');
+        }, 2000);
+    }
+});
+</script>
 </body>
 </html>
