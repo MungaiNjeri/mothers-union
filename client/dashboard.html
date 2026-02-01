@@ -23,6 +23,9 @@
                         "display": ["Lexend"]
                     },
                     borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    screens: {
+                        'xs': '480px',
+                    },
                 },
             },
         }
@@ -65,203 +68,431 @@
     .toast.warning {
         background-color: #f59e0b;
     }
+    .toast.error {
+        background-color: #ef4444;
+    }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .mobile-hidden {
+            display: none !important;
+        }
+        .mobile-visible {
+            display: block !important;
+        }
+        .mobile-stack {
+            flex-direction: column !important;
+        }
+        .mobile-full-width {
+            width: 100% !important;
+        }
+        .mobile-text-center {
+            text-align: center;
+        }
+        .mobile-padding {
+            padding: 1rem !important;
+        }
+        .mobile-small-text {
+            font-size: 0.875rem !important;
+        }
+        .mobile-small-padding {
+            padding: 0.75rem !important;
+        }
+        
+        /* Mobile chart */
+        .chart-container {
+            background-size: 100% 40px;
+        }
+        .chart-container div.w-8 {
+            width: 24px !important;
+        }
+    }
 </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111812] dark:text-white">
     <!-- Toast Notification Container -->
     <div id="toastContainer"></div>
     
-<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a] px-10 py-3 sticky top-0 z-50">
-<div class="flex items-center gap-4 text-[#111812] dark:text-white">
-<div class="size-8 text-primary">
-<span class="material-symbols-outlined text-4xl">account_balance</span>
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a] px-4 sm:px-6 lg:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-2 sm:gap-4 text-[#111812] dark:text-white">
+<div class="size-8 text-primary mobile-hidden">
+<span class="material-symbols-outlined text-3xl sm:text-4xl">account_balance</span>
 </div>
-<h2 class="text-[#111812] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Mothers' Union Finance</h2>
+<h2 class="text-[#111812] dark:text-white text-lg sm:text-xl font-bold leading-tight tracking-[-0.015em]">Mothers' Union Finance</h2>
 </div>
-<div class="flex flex-1 justify-end gap-6 items-center">
-<nav class="flex items-center gap-8 mr-4">
+<div class="flex-1 justify-end gap-4 sm:gap-6 items-center hidden md:flex">
+<nav class="flex items-center gap-4 sm:gap-6 lg:gap-8 mr-2 sm:mr-4">
 <!-- Dashboard Link -->
 <a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary pb-1" href="dashboard.html">Dashboard</a>
 <!-- Records Link -->
-<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">Records</a>
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="index.html">Record</a>
 <!-- Members Link -->
 <a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="members.html">Members</a>
 <!-- Transaction Link -->
 <a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="transactions.html">Transaction</a>
 <!-- Reports Link -->
 <a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="reports.html">Reports</a>
-<!-- Settings Link -->
-<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="settings.html">Settings</a>
+<!-- Help Center Link -->
+<a class="text-[#111812] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors hidden lg:inline" href="helpcenter.html">Help Center</a>
 </nav>
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Portrait of a church official" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXhkxFzOC7Fsx5ywMMY61lJP1qoGcHThMmhS_K2OhiRPPj939p-Lotjum-CgjuChTAPJ1lRjSxT_fyQO168u2hLpyBRP42I07By-z25DuxW7YmCjTnPe2Sn2pFFlkRuMc5CH1C6IVkvY_2bobgOeplkt4Yc5iQNB4vlfA4N1e0igeEqpsXf9gYzz4EeX9sXp62INn3bbc14kPmvBvPPMFC1EwCcqj92F0_4aUw6Cpb_E4YoAhLa0OeA9i7kkaRAKRPj12rWZb8_Q");'></div>
+    
+<!-- Dynamic User Profile -->
+<div id="userProfile" class="hidden md:flex items-center gap-3">
+    <!-- Profile content will be loaded here -->
 </div>
+</div>
+
+<!-- Mobile menu button -->
+<button id="mobileMenuButton" class="md:hidden text-[#111812] dark:text-white">
+    <span class="material-symbols-outlined text-2xl">menu</span>
+</button>
 </header>
-<main class="max-w-[1200px] mx-auto py-8 px-6">
-<div class="mb-10">
-<h1 class="text-[#111812] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]" id="greeting">Good Morning, Naomi</h1>
-<p class="text-[#638866] dark:text-[#a3c3a6] text-lg font-normal leading-normal" id="currentDate">Today is Thursday, 12th October 2023</p>
+
+<!-- Mobile Navigation Menu (Hidden by default) -->
+<div id="mobileMenu" class="md:hidden fixed top-0 left-0 w-full h-full bg-white dark:bg-[#1a2a1a] z-50 transform -translate-x-full transition-transform duration-300">
+    <div class="flex justify-between items-center p-4 border-b border-[#dce5dc] dark:border-[#2a3a2a]">
+        <h3 class="text-lg font-bold">Menu</h3>
+        <button id="closeMobileMenu" class="text-gray-500">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <div class="p-4 space-y-4">
+        <a href="dashboard.html" class="flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="index.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Records</span>
+        </a>
+        <a href="members.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">group</span>
+            <span>Members</span>
+        </a>
+        <a href="transactions.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Transaction</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Reports</span>
+        </a>
+        <a href="helpcenter.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">help</span>
+            <span>Help Center</span>
+        </a>
+        <a href="profile.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span>My Profile</span>
+        </a>
+        <a href="setting.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+        </a>
+        <button id="mobileLogoutBtn" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500">
+            <span class="material-symbols-outlined">logout</span>
+            <span>Logout</span>
+        </button>
+    </div>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-<div class="bg-accent-gold text-white p-8 rounded-xl shadow-lg border border-accent-gold/20 flex flex-col justify-between">
+
+<!-- Mobile User Profile -->
+<div id="mobileUserProfile" class="md:hidden flex items-center justify-between p-4 border-b border-[#dce5dc] dark:border-[#2a3a2a]">
+    <div class="flex items-center gap-3">
+        <div id="mobileUserInitials" class="size-10 rounded-full bg-gradient-to-br from-primary to-accent-gold flex items-center justify-center text-white font-bold text-lg">
+            U
+        </div>
+        <div>
+            <p id="mobileUserName" class="font-semibold text-sm">Loading...</p>
+            <p id="mobileUserRole" class="text-xs text-[#638866]">Member</p>
+        </div>
+    </div>
+    <div class="flex gap-2">
+        <a href="profile.html" class="p-2 rounded-lg bg-primary/10 text-primary">
+            <span class="material-symbols-outlined text-lg">account_circle</span>
+        </a>
+        <a href="setting.html" class="p-2 rounded-lg bg-accent-gold/10 text-accent-gold">
+            <span class="material-symbols-outlined text-lg">settings</span>
+        </a>
+    </div>
+</div>
+
+<main class="max-w-[1200px] mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
+<div class="mb-6 sm:mb-8 lg:mb-10">
+<h1 class="text-[#111812] dark:text-white text-2xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]" id="greeting">Good Morning</h1>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-sm sm:text-base lg:text-lg font-normal leading-normal mt-1" id="currentDate">Today is Thursday, 12th October 2023</p>
+</div>
+
+<!-- Stats Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 lg:mb-10">
+<div class="bg-accent-gold text-white p-6 sm:p-8 rounded-xl shadow-lg border border-accent-gold/20 flex flex-col justify-between">
 <div>
-<p class="text-white/80 text-sm font-bold uppercase tracking-wider mb-1">Current Balance</p>
-<p class="text-4xl font-black" id="currentBalance">KSH420,000</p>
+<p class="text-white/80 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Current Balance</p>
+<p class="text-2xl sm:text-3xl lg:text-4xl font-black" id="currentBalance">KSH420,000</p>
 </div>
-<div class="mt-4 flex items-center gap-2">
-<span class="material-symbols-outlined">account_balance_wallet</span>
-<span class="text-sm">Total Available Funds</span>
+<div class="mt-3 sm:mt-4 flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+<span>Total Available Funds</span>
 </div>
 </div>
-<div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
+
+<div class="bg-white dark:bg-[#1a2a1a] p-6 sm:p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
 <div>
-<p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Income This Month</p>
-<p class="text-primary text-4xl font-black" id="monthlyIncome">ksh250,000</p>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Total Income This Month</p>
+<p class="text-primary text-2xl sm:text-3xl lg:text-4xl font-black" id="monthlyIncome">ksh250,000</p>
 </div>
-<div class="mt-4 flex items-center gap-2 text-primary font-medium">
-<span class="material-symbols-outlined">trending_up</span>
-<span class="text-sm" id="incomeChange">+12% from last month</span>
+<div class="mt-3 sm:mt-4 flex items-center gap-2 text-primary font-medium text-sm">
+<span class="material-symbols-outlined text-lg">trending_up</span>
+<span id="incomeChange">+12% from last month</span>
 </div>
 </div>
-<div class="bg-white dark:bg-[#1a2a1a] p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
+
+<div class="bg-white dark:bg-[#1a2a1a] p-6 sm:p-8 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col justify-between">
 <div>
-<p class="text-[#638866] dark:text-[#a3c3a6] text-sm font-bold uppercase tracking-wider mb-1">Total Expenses This Month</p>
-<p class="text-soft-red dark:text-[#ff6b6b] text-4xl font-black" id="monthlyExpenses">ksh30,000</p>
+<p class="text-[#638866] dark:text-[#a3c3a6] text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Total Expenses This Month</p>
+<p class="text-soft-red dark:text-[#ff6b6b] text-2xl sm:text-3xl lg:text-4xl font-black" id="monthlyExpenses">ksh30,000</p>
 </div>
-<div class="mt-4 flex items-center gap-2 text-accent-gold font-medium">
-<span class="material-symbols-outlined">payments</span>
-<span class="text-sm" id="pendingApprovals">8 Pending Approvals</span>
+<div class="mt-3 sm:mt-4 flex items-center gap-2 text-accent-gold font-medium text-sm">
+<span class="material-symbols-outlined text-lg">payments</span>
+<span id="pendingApprovals">8 Pending Approvals</span>
 </div>
 </div>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+<!-- Recent Transactions (Full width on mobile, 2/3 on desktop) -->
 <div class="lg:col-span-2">
 <div class="flex items-center justify-between mb-4">
-<h3 class="text-xl font-bold">Recent Transactions</h3>
-<a class="text-primary text-sm font-bold hover:underline" href="Transactions.html">View All</a>
+<h3 class="text-lg sm:text-xl font-bold">Recent Transactions</h3>
+<a class="text-primary text-sm font-bold hover:underline" href="transactions.html">View All</a>
 </div>
 <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] overflow-hidden shadow-sm">
 <div id="transactionsContainer" class="divide-y divide-[#dce5dc] dark:divide-[#2a3a2a]">
-<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="bg-primary/10 text-primary p-2 rounded-lg">
-<span class="material-symbols-outlined">add_circle</span>
+<!-- Transactions will be loaded here -->
+<div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+<div class="bg-primary/10 text-primary p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined text-lg sm:text-xl">add_circle</span>
 </div>
+<div class="min-w-0 flex-1">
+<p class="font-bold text-sm sm:text-base truncate">Sunday Collection</p>
+<p class="text-xs text-[#638866] mt-0.5">Tithes &amp; Offerings • 12 Oct 2024</p>
+</div>
+</div>
+<p class="font-black text-primary text-sm sm:text-base ml-3 flex-shrink-0">+850,000</p>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined text-lg sm:text-xl">remove_circle</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-bold text-sm sm:text-base truncate">Refreshments for Outreach</p>
+<p class="text-xs text-[#638866] mt-0.5">Community Event • 10 Oct 2025</p>
+</div>
+</div>
+<p class="font-black text-accent-gold text-sm sm:text-base ml-3 flex-shrink-0">-150,000</p>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+<div class="bg-primary/10 text-primary p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined text-lg sm:text-xl">add_circle</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-bold text-sm sm:text-base truncate">Monthly Member Dues</p>
+<p class="text-xs text-[#638866] mt-0.5">Membership • 08 Oct 2024</p>
+</div>
+</div>
+<p class="font-black text-primary text-sm sm:text-base ml-3 flex-shrink-0">200,000</p>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined text-lg sm:text-xl">remove_circle</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-bold text-sm sm:text-base truncate">Electricity Bill</p>
+<p class="text-xs text-[#638866] mt-0.5">Utilities • 05 Oct 2026</p>
+</div>
+</div>
+<p class="font-black text-accent-gold text-sm sm:text-base ml-3 flex-shrink-0">-85,500</p>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+<div class="bg-primary/10 text-primary p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined text-lg sm:text-xl">add_circle</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-bold text-sm sm:text-base truncate">Donation from Patron</p>
+<p class="text-xs text-[#638866] mt-0.5">Grants • 02 Oct 2026</p>
+</div>
+</div>
+<p class="font-black text-primary text-sm sm:text-base ml-3 flex-shrink-0">200,000</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Right Sidebar (Full width on mobile, 1/3 on desktop) -->
+<div class="space-y-6 lg:space-y-8">
+<!-- Quick Actions -->
 <div>
-<p class="font-bold">Sunday Collection</p>
-<p class="text-xs text-[#638866]">Tithes &amp; Offerings • 12 Oct 2024</p>
-</div>
-</div>
-<p class="font-black text-primary">+850,000</p>
-</div>
-<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg">
-<span class="material-symbols-outlined">remove_circle</span>
-</div>
-<div>
-<p class="font-bold">Refreshments for Outreach</p>
-<p class="text-xs text-[#638866]">Community Event • 10 Oct 2025</p>
-</div>
-</div>
-<p class="font-black text-accent-gold">-150,000</p>
-</div>
-<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="bg-primary/10 text-primary p-2 rounded-lg">
-<span class="material-symbols-outlined">add_circle</span>
-</div>
-<div>
-<p class="font-bold">Monthly Member Dues</p>
-<p class="text-xs text-[#638866]">Membership • 08 Oct 2024</p>
-</div>
-</div>
-<p class="font-black text-primary">200,000</p>
-</div>
-<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="bg-accent-gold/10 text-accent-gold p-2 rounded-lg">
-<span class="material-symbols-outlined">remove_circle</span>
-</div>
-<div>
-<p class="font-bold">Electricity Bill</p>
-<p class="text-xs text-[#638866]">Utilities • 05 Oct 2026</p>
-</div>
-</div>
-<p class="font-black text-accent-gold">-85,500</p>
-</div>
-<div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="bg-primary/10 text-primary p-2 rounded-lg">
-<span class="material-symbols-outlined">add_circle</span>
-</div>
-<div>
-<p class="font-bold">Donation from Patron</p>
-<p class="text-xs text-[#638866]">Grants • 02 Oct 2026</p>
-</div>
-</div>
-<p class="font-black text-primary">200,000</p>
-</div>
-</div>
-</div>
-</div>
-<div class="flex flex-col gap-8">
-<div>
-<h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+<h3 class="text-lg sm:text-xl font-bold mb-4">Quick Actions</h3>
 <div class="flex flex-col gap-3">
-<!-- Add New Record Button with Navigation -->
-<a href="index.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-20 bg-primary text-white text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform">
-<span class="material-symbols-outlined text-3xl">add_card</span>
-<span>Add New Record</span>
+<a href="index.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-14 sm:h-16 lg:h-20 bg-primary text-white text-base sm:text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform px-4">
+<span class="material-symbols-outlined text-2xl sm:text-3xl">add_card</span>
+<span class="truncate">Add New Record</span>
 </a>
-<!-- Register Member Button with Navigation -->
-<a href="members.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-20 bg-[#111812] dark:bg-white dark:text-[#111812] text-white text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform">
-<span class="material-symbols-outlined text-3xl">person_add</span>
-<span>Register Member</span>
+<a href="members.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-14 sm:h-16 lg:h-20 bg-[#111812] dark:bg-white dark:text-[#111812] text-white text-base sm:text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform px-4">
+<span class="material-symbols-outlined text-2xl sm:text-3xl">person_add</span>
+<span class="truncate">Register Member</span>
+</a>
+<a href="profile.html" class="w-full flex items-center justify-center gap-3 rounded-xl h-14 sm:h-16 lg:h-20 bg-gradient-to-r from-primary to-accent-gold text-white text-base sm:text-lg font-bold shadow-lg hover:scale-[1.02] transition-transform px-4">
+<span class="material-symbols-outlined text-2xl sm:text-3xl">account_circle</span>
+<span class="truncate">My Profile</span>
 </a>
 </div>
 </div>
-<div class="bg-white dark:bg-[#1a2a1a] p-6 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col h-full">
-<h3 class="text-base font-bold mb-1">Weekly Giving Trend</h3>
-<p class="text-xs text-[#638866] mb-4">Pulse of church finances</p>
-<div class="chart-container flex-grow min-h-[120px] flex items-end justify-between px-2" id="chartBars">
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="65"></div>
-<div class="text-[10px] text-[#638866]">Mon</div>
+
+<!-- Weekly Chart -->
+<div class="bg-white dark:bg-[#1a2a1a] p-4 sm:p-6 rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] shadow-sm flex flex-col h-full">
+<h3 class="text-base sm:text-lg font-bold mb-1">Weekly Giving Trend</h3>
+<p class="text-xs text-[#638866] mb-3 sm:mb-4">Pulse of church finances</p>
+<div class="chart-container flex-grow min-h-[100px] sm:min-h-[120px] flex items-end justify-between px-1 sm:px-2" id="chartBars">
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="65"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Mon</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="40"></div>
-<div class="text-[10px] text-[#638866]">Tue</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="40"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Tue</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="80"></div>
-<div class="text-[10px] text-[#638866]">Wed</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="80"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Wed</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="55"></div>
-<div class="text-[10px] text-[#638866]">Thu</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="55"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Thu</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="95"></div>
-<div class="text-[10px] text-[#638866]">Fri</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="95"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Fri</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="30"></div>
-<div class="text-[10px] text-[#638866]">Sat</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-primary rounded-t-md transition-all duration-500" style="height: 0" data-value="30"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Sat</div>
 </div>
-<div class="flex flex-col items-center gap-1">
-<div class="w-8 bg-accent-gold rounded-t-md transition-all duration-500" style="height: 0" data-value="100"></div>
-<div class="text-[10px] text-[#638866]">Sun</div>
-</div>
-</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<div class="w-6 sm:w-8 bg-accent-gold rounded-t-md transition-all duration-500" style="height: 0" data-value="100"></div>
+<div class="text-[10px] sm:text-xs text-[#638866]">Sun</div>
 </div>
 </div>
+</div>
+</div>
+</div>
+
+<!-- System Settings Quick Access -->
+<div class="mt-6 sm:mt-8 bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] p-4 sm:p-6">
+    <div class="mb-4 sm:mb-6">
+        <h3 class="text-lg sm:text-xl font-bold text-[#111812] dark:text-white">System & Account Settings</h3>
+        <p class="text-xs sm:text-sm text-[#638866] dark:text-[#a3c3a6] mt-1">Manage your preferences and system configuration</p>
+    </div>
+    
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <a href="profile.html" class="flex flex-col items-center p-4 sm:p-6 bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors group">
+            <div class="size-10 sm:size-12 lg:size-14 rounded-full bg-primary/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-primary text-xl sm:text-2xl">account_circle</span>
+            </div>
+            <h4 class="font-semibold text-[#111812] dark:text-white text-sm sm:text-base">Profile Settings</h4>
+            <p class="text-xs text-[#638866] text-center mt-1 sm:mt-2">Update personal information</p>
+        </a>
+        
+        <a href="setting.html" class="flex flex-col items-center p-4 sm:p-6 bg-accent-gold/5 hover:bg-accent-gold/10 rounded-xl transition-colors group">
+            <div class="size-10 sm:size-12 lg:size-14 rounded-full bg-accent-gold/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-accent-gold text-xl sm:text-2xl">settings</span>
+            </div>
+            <h4 class="font-semibold text-[#111812] dark:text-white text-sm sm:text-base">System Settings</h4>
+            <p class="text-xs text-[#638866] text-center mt-1 sm:mt-2">Configure system preferences</p>
+        </a>
+        
+        <a href="setting.html#security" class="flex flex-col items-center p-4 sm:p-6 bg-blue-500/5 hover:bg-blue-500/10 rounded-xl transition-colors group">
+            <div class="size-10 sm:size-12 lg:size-14 rounded-full bg-blue-500/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-blue-500 text-xl sm:text-2xl">lock</span>
+            </div>
+            <h4 class="font-semibold text-[#111812] dark:text-white text-sm sm:text-base">Security</h4>
+            <p class="text-xs text-[#638866] text-center mt-1 sm:mt-2">Password & security settings</p>
+        </a>
+        
+        <a href="setting.html#notifications" class="flex flex-col items-center p-4 sm:p-6 bg-purple-500/5 hover:bg-purple-500/10 rounded-xl transition-colors group">
+            <div class="size-10 sm:size-12 lg:size-14 rounded-full bg-purple-500/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-purple-500 text-xl sm:text-2xl">notifications</span>
+            </div>
+            <h4 class="font-semibold text-[#111812] dark:text-white text-sm sm:text-base">Notifications</h4>
+            <p class="text-xs text-[#638866] text-center mt-1 sm:mt-2">Manage alerts & updates</p>
+        </a>
+    </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2a1a] border-t border-[#dce5dc] dark:border-[#2a3a2a] py-2 px-4 z-40">
+<div class="flex justify-around items-center">
+<a href="dashboard.html" class="flex flex-col items-center p-2">
+<span class="material-symbols-outlined text-primary">dashboard</span>
+<span class="text-xs mt-1 text-primary">Home</span>
+</a>
+<a href="index.html" class="flex flex-col items-center p-2">
+<span class="material-symbols-outlined text-gray-500">receipt_long</span>
+<span class="text-xs mt-1">Records</span>
+</a>
+<a href="transactions.html" class="flex flex-col items-center p-2">
+<span class="material-symbols-outlined text-gray-500">add_circle</span>
+<span class="text-xs mt-1">Add</span>
+</a>
+<a href="members.html" class="flex flex-col items-center p-2">
+<span class="material-symbols-outlined text-gray-500">group</span>
+<span class="text-xs mt-1">Members</span>
+</a>
+<button id="mobileMoreMenu" class="flex flex-col items-center p-2">
+<span class="material-symbols-outlined text-gray-500">more_horiz</span>
+<span class="text-xs mt-1">More</span>
+</button>
+</div>
+</nav>
+
+<!-- Mobile Quick Action Sheet -->
+<div id="mobileQuickActions" class="md:hidden fixed bottom-16 right-4 z-40 hidden">
+    <div class="bg-white dark:bg-[#1a2a1a] rounded-xl shadow-lg border border-[#dce5dc] dark:border-[#2a3a2a] p-3 space-y-2">
+        <a href="profile.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5">
+            <span class="material-symbols-outlined text-primary">account_circle</span>
+            <span>Profile</span>
+        </a>
+        <a href="setting.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5">
+            <span class="material-symbols-outlined text-accent-gold">settings</span>
+            <span>Settings</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5">
+            <span class="material-symbols-outlined text-blue-500">analytics</span>
+            <span>Reports</span>
+        </a>
+        <a href="helpcenter.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/5">
+            <span class="material-symbols-outlined text-purple-500">help</span>
+            <span>Help</span>
+        </a>
+    </div>
 </div>
 </main>
-<footer class="mt-12 py-8 border-t border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a]">
-<div class="max-w-[1200px] mx-auto px-6 text-center">
+
+<footer class="mt-12 py-6 sm:py-8 border-t border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a] hidden md:block">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 text-center">
 <p class="text-[#638866] text-sm">© <span id="currentYear">2026</span> Mothers' Union Anglican Diocese. All financial data is encrypted and secure.</p>
 </div>
 </footer>
+
+<!-- Mobile Footer -->
+<div class="md:hidden mt-8 pt-6 border-t border-[#dce5dc] dark:border-[#2a3a2a] text-center pb-24">
+<p class="text-[#638866] text-xs">© <span id="mobileCurrentYear">2026</span> Mothers' Union Anglican Diocese</p>
+</div>
 
 <script>
 // Function to show toast notifications
@@ -273,7 +504,8 @@ function showToast(message, type = 'info') {
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-sm">
                 ${type === 'success' ? 'check_circle' : 
-                  type === 'warning' ? 'warning' : 'info'}
+                  type === 'warning' ? 'warning' : 
+                  type === 'error' ? 'error' : 'info'}
             </span>
             <span>${message}</span>
         </div>
@@ -290,6 +522,30 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
+// Function to check authentication and redirect if not logged in
+function checkAuth() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    if (!isLoggedIn || isLoggedIn !== 'true') {
+        showToast('Please login first', 'warning');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 2000);
+        return false;
+    }
+    
+    if (!currentUser.fullName && !currentUser.name && !currentUser.email) {
+        showToast('User data not found, please login again', 'warning');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 2000);
+        return false;
+    }
+    
+    return true;
+}
+
 // Function to format currency
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-KE', {
@@ -300,7 +556,7 @@ function formatCurrency(amount) {
     }).format(amount).replace('KES', 'KSH');
 }
 
-// Function to update date and time
+// Function to update date and time with user's name
 function updateDateTime() {
     const now = new Date();
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -321,6 +577,26 @@ function updateDateTime() {
         dateElement.textContent = `Today is ${dayName}, ${date}${suffix} ${monthName} ${year}`;
     }
     
+    // Update footer year
+    const yearElement = document.getElementById('currentYear');
+    const mobileYearElement = document.getElementById('mobileCurrentYear');
+    if (yearElement) yearElement.textContent = year;
+    if (mobileYearElement) mobileYearElement.textContent = year;
+    
+    // Get logged-in user's name from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    let userName = 'Guest'; // Default if no user is logged in
+    
+    if (currentUser && currentUser.fullName) {
+        userName = currentUser.fullName;
+    } else if (currentUser && currentUser.name) {
+        userName = currentUser.name;
+    } else if (currentUser && currentUser.email) {
+        // Extract name from email
+        userName = currentUser.email.split('@')[0];
+        userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+    }
+    
     // Update greeting based on time of day
     const hour = now.getHours();
     let greeting = 'Good ';
@@ -330,14 +606,136 @@ function updateDateTime() {
     
     const greetingElement = document.getElementById('greeting');
     if (greetingElement) {
-        greetingElement.textContent = `${greeting}, Naomi`;
+        greetingElement.textContent = `${greeting}, ${userName}`;
     }
     
-    // Update current year in footer
-    const yearElement = document.getElementById('currentYear');
-    if (yearElement) {
-        yearElement.textContent = year;
+    // Update mobile user info
+    updateMobileUserInfo(currentUser);
+}
+
+// Function to update mobile user information
+function updateMobileUserInfo(currentUser) {
+    const mobileUserName = document.getElementById('mobileUserName');
+    const mobileUserRole = document.getElementById('mobileUserRole');
+    const mobileUserInitials = document.getElementById('mobileUserInitials');
+    
+    if (!currentUser) return;
+    
+    let userName = currentUser.fullName || currentUser.name || 'Guest';
+    let userRole = currentUser.role || 'Member';
+    
+    // Create initials from name
+    let initials = userName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+    
+    if (!initials && currentUser.email) {
+        initials = currentUser.email.charAt(0).toUpperCase();
     }
+    
+    if (mobileUserName) mobileUserName.textContent = userName;
+    if (mobileUserRole) mobileUserRole.textContent = userRole;
+    if (mobileUserInitials) mobileUserInitials.textContent = initials || 'U';
+}
+
+// Function to update user profile in header
+function updateUserProfile() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userProfileDiv = document.getElementById('userProfile');
+    
+    if (!userProfileDiv) return;
+    
+    let userName = 'Guest';
+    let userEmail = '';
+    let userRole = 'Member';
+    
+    if (currentUser) {
+        userName = currentUser.fullName || currentUser.name || 'Guest';
+        userEmail = currentUser.email || '';
+        userRole = currentUser.role || 'Member';
+    }
+    
+    // Create initials from name
+    let initials = userName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+    
+    // If no initials from name, use first letter of email
+    if (!initials && userEmail) {
+        initials = userEmail.charAt(0).toUpperCase();
+    }
+    
+    // Update profile HTML
+    userProfileDiv.innerHTML = `
+        <div class="hidden md:flex flex-col items-end">
+            <span class="text-sm font-semibold text-[#111812] dark:text-white">${userName}</span>
+            <span class="text-xs text-[#638866] dark:text-[#a3c3a6]">${userRole} ${userEmail ? '• ' + userEmail : ''}</span>
+        </div>
+        <div class="relative group">
+            <div class="size-10 rounded-full bg-gradient-to-br from-primary to-accent-gold flex items-center justify-center text-white font-bold text-lg cursor-pointer">
+                ${initials || 'U'}
+            </div>
+            <!-- Dropdown menu -->
+            <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1a2a1a] border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div class="px-4 py-2 border-b border-[#dce5dc] dark:border-[#2a3a2a]">
+                    <p class="font-semibold text-sm">${userName}</p>
+                    <p class="text-xs text-[#638866] truncate">${userEmail || 'No email'}</p>
+                </div>
+                <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-sm">account_circle</span>
+                    <span>My Profile</span>
+                </a>
+                <a href="setting.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-sm">settings</span>
+                    <span>Settings</span>
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-sm">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <div class="border-t border-[#dce5dc] dark:border-[#2a3a2a] mt-2 pt-2">
+                    <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-soft-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userRole');
+                showToast('Logged out successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!userProfileDiv.contains(e.target)) {
+            const dropdown = userProfileDiv.querySelector('.absolute');
+            if (dropdown) {
+                dropdown.classList.remove('opacity-100', 'visible');
+                dropdown.classList.add('opacity-0', 'invisible');
+            }
+        }
+    });
 }
 
 // Function to animate chart bars
@@ -435,17 +833,17 @@ function updateRecentTransactions(transactions) {
         const amount = parseFloat(tx.amount).toLocaleString('en-KE');
         
         const transactionHTML = `
-            <div class="p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="${isIncome ? 'bg-primary/10 text-primary' : 'bg-accent-gold/10 text-accent-gold'} p-2 rounded-lg">
-                        <span class="material-symbols-outlined">${isIncome ? 'add_circle' : 'remove_circle'}</span>
+            <div class="p-4 sm:p-5 flex items-center justify-between hover:bg-primary/5 transition-colors">
+                <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div class="${isIncome ? 'bg-primary/10 text-primary' : 'bg-accent-gold/10 text-accent-gold'} p-2 rounded-lg flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg sm:text-xl">${isIncome ? 'add_circle' : 'remove_circle'}</span>
                     </div>
-                    <div>
-                        <p class="font-bold">${tx.source}</p>
-                        <p class="text-xs text-[#638866]">${tx.category} • ${formattedDate}</p>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-bold text-sm sm:text-base truncate">${tx.source}</p>
+                        <p class="text-xs text-[#638866] mt-0.5">${tx.category} • ${formattedDate}</p>
                     </div>
                 </div>
-                <p class="font-black ${isIncome ? 'text-primary' : 'text-accent-gold'}">${isIncome ? '+' : '-'}${amount}</p>
+                <p class="font-black ${isIncome ? 'text-primary' : 'text-accent-gold'} text-sm sm:text-base ml-3 flex-shrink-0">${isIncome ? '+' : '-'}${amount}</p>
             </div>
         `;
         
@@ -473,14 +871,145 @@ function simulateRealTimeUpdates() {
             changeElement.textContent = `${change} from last month`;
         }
         
-        // Show subtle notification
-        showToast('Dashboard data updated', 'info');
+        // Show subtle notification only on desktop
+        if (window.innerWidth >= 768) {
+            showToast('Dashboard data updated', 'info');
+        }
     }, 30000); // Every 30 seconds
+}
+
+// Function to initialize quick settings cards
+function initializeQuickSettings() {
+    // Add click handlers to quick settings cards
+    document.querySelectorAll('[href="setting.html#security"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.setItem('settingsSection', 'security');
+            window.location.href = 'setting.html';
+        });
+    });
+    
+    document.querySelectorAll('[href="setting.html#notifications"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.setItem('settingsSection', 'notifications');
+            window.location.href = 'setting.html';
+        });
+    });
+}
+
+// Mobile menu functionality
+function setupMobileMenu() {
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const closeMobileMenu = document.getElementById('closeMobileMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMoreMenu = document.getElementById('mobileMoreMenu');
+    const mobileQuickActions = document.getElementById('mobileQuickActions');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('-translate-x-full');
+        });
+    }
+    
+    if (closeMobileMenu && mobileMenu) {
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.add('-translate-x-full');
+        });
+    }
+    
+    if (mobileMoreMenu && mobileQuickActions) {
+        let quickActionsVisible = false;
+        mobileMoreMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+            quickActionsVisible = !quickActionsVisible;
+            if (quickActionsVisible) {
+                mobileQuickActions.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileQuickActions.classList.add('opacity-100', 'scale-100');
+                    mobileQuickActions.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            } else {
+                mobileQuickActions.classList.add('opacity-0', 'scale-95');
+                mobileQuickActions.classList.remove('opacity-100', 'scale-100');
+                setTimeout(() => {
+                    mobileQuickActions.classList.add('hidden');
+                }, 200);
+            }
+        });
+        
+        // Close quick actions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileQuickActions.contains(e.target) && e.target !== mobileMoreMenu) {
+                mobileQuickActions.classList.add('opacity-0', 'scale-95');
+                mobileQuickActions.classList.remove('opacity-100', 'scale-100');
+                setTimeout(() => {
+                    mobileQuickActions.classList.add('hidden');
+                }, 200);
+                quickActionsVisible = false;
+            }
+        });
+    }
+    
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userRole');
+                showToast('Logged out successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        });
+    }
+    
+    // Close mobile menu when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+        if (mobileMenu && !mobileMenu.contains(e.target) && e.target !== mobileMenuButton) {
+            mobileMenu.classList.add('-translate-x-full');
+        }
+    });
+}
+
+// Function to optimize mobile touch experience
+function optimizeForMobile() {
+    // Add touch feedback to all interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .transaction-card, .hover\\:bg-primary\\/5');
+    interactiveElements.forEach(el => {
+        el.addEventListener('touchstart', function() {
+            this.classList.add('active-scale');
+        });
+        
+        el.addEventListener('touchend', function() {
+            this.classList.remove('active-scale');
+        });
+    });
+    
+    // Prevent zoom on double-tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
 }
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Update date and time immediately
+    // Check if user is logged in
+    if (!checkAuth()) {
+        return; // Stop execution if not logged in
+    }
+    
+    // Update user profile in header
+    updateUserProfile();
+    
+    // Update date and time immediately (with user's name)
     updateDateTime();
     
     // Update every minute
@@ -498,37 +1027,69 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start real-time updates simulation
     simulateRealTimeUpdates();
     
-    // Show welcome message
+    // Initialize quick settings
+    initializeQuickSettings();
+    
+    // Setup mobile menu and interactions
+    setupMobileMenu();
+    
+    // Optimize for mobile touch
+    if (window.innerWidth <= 768) {
+        optimizeForMobile();
+    }
+    
+    // Update on window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+            optimizeForMobile();
+        }
+    });
+    
+    // Get current user for personalized welcome
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userName = currentUser.fullName || currentUser.name || 'there';
+    
+    // Show personalized welcome message
     setTimeout(() => {
-        showToast('Welcome to Mothers\' Union Finance Dashboard', 'success');
+        showToast(`Welcome back, ${userName}!`, 'success');
     }, 1000);
     
-    // Add click handlers to transaction items for demo purposes
+    // Add click handlers to transaction items
     document.addEventListener('click', function(e) {
         if (e.target.closest('.hover\\:bg-primary\\/5')) {
             showToast('Click "View All" to see transaction details', 'info');
         }
     });
     
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.key === 'r') {
-            e.preventDefault();
-            updateDashboardStats();
-            showToast('Dashboard refreshed', 'success');
+    // Add keyboard shortcuts (desktop only)
+    if (window.innerWidth >= 768) {
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                updateDashboardStats();
+                showToast('Dashboard refreshed', 'success');
+            }
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                window.location.href = 'index.html';
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.location.href = 'profile.html';
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                window.location.href = 'setting.html';
+            }
+        });
+        
+        // Display keyboard shortcuts help on first visit
+        if (!localStorage.getItem('dashboardHelpShown')) {
+            setTimeout(() => {
+                showToast('Shortcuts: Ctrl+P=Profile, Ctrl+S=Settings, Ctrl+R=Refresh', 'warning');
+                localStorage.setItem('dashboardHelpShown', 'true');
+            }, 3000);
         }
-        if (e.ctrlKey && e.key === 'n') {
-            e.preventDefault();
-            window.location.href = 'transactions-new.html';
-        }
-    });
-    
-    // Display keyboard shortcuts help on first visit
-    if (!localStorage.getItem('dashboardHelpShown')) {
-        setTimeout(() => {
-            showToast('Tip: Use Ctrl+R to refresh, Ctrl+N for new transaction', 'warning');
-            localStorage.setItem('dashboardHelpShown', 'true');
-        }, 3000);
     }
 });
 </script>

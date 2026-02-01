@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Mothers' Union Help Center</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mothers' Union Help Center</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -32,159 +31,597 @@
             },
         }
     </script>
-<style>
+    <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Animation for FAQ dropdown */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .faq-answer.open {
+            max-height: 200px;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #13ec37;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: #ef4444;
+            color: white;
         }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
-<div class="layout-container flex flex-col min-h-screen">
-<!-- Top Navigation Bar -->
-<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 md:px-10 py-3 sticky top-0 z-50">
-<div class="flex items-center gap-4 md:gap-8">
-<div class="flex items-center gap-3 text-slate-900 dark:text-white">
-<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
-<span class="material-symbols-outlined">church</span>
-</div>
-<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight hidden sm:block">Mothers' Union</h2>
-</div>
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Home</a>
-<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Finance</a>
-<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Records</a>
-<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Reports</a>
-</nav>
-</div>
-<div class="flex flex-1 justify-end gap-4 items-center">
-<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
-<div class="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-slate-200 dark:border-slate-700">
-<div class="text-slate-400 flex items-center justify-center pl-4 bg-slate-50 dark:bg-slate-800">
-<span class="material-symbols-outlined text-xl">search</span>
-</div>
-<input class="form-input flex w-full min-w-0 flex-1 border-none bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-0 px-3 text-sm" placeholder="Search Help..." value=""/>
-</div>
-</label>
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="Profile picture of user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQDsoz2wOsFGp04qt3jiXAYFBkJEmvUVjtvWWiKA2aIx02d9-Zxc00tb9oMQDITHNYXF33P39IbGd0I7-2ZLGjd6l-YjVLBd4gM6KCf5m3oGAnAJ3-FpZgE_krPJ-TT-Ld8G3VE8f1pq9z9cyzH8hTp24aK4mkFgRP3h7motacYLLAtATQHITkTILd0-4-3fLM9lV44b-u4fPb3byovyamrsVRf37BAlN07gCUdnKPWAmK0HSpcrgeP3XczNzGrYmY-hn5f-VdCjQ3");'></div>
-</div>
-</header>
-<main class="flex-grow">
-<!-- Hero Section -->
-<div class="max-w-4xl mx-auto px-6 py-12 text-center">
-<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-extrabold leading-tight mb-6">How can we help you today?</h1>
-<div class="relative max-w-2xl mx-auto">
-<div class="flex items-center w-full h-14 bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 border-transparent focus-within:border-primary overflow-hidden transition-all">
-<div class="pl-5 text-slate-400">
-<span class="material-symbols-outlined text-2xl">search</span>
-</div>
-<input class="w-full h-full bg-transparent border-none focus:ring-0 px-4 text-lg placeholder:text-slate-400 text-slate-900 dark:text-white" placeholder="Search for tutorials, guides, or FAQs..."/>
-<button class="mr-2 px-6 py-2 bg-primary hover:bg-primary/90 text-slate-900 font-bold rounded-lg transition-colors">
+    <div class="layout-container flex flex-col min-h-screen">
+        <!-- Top Navigation Bar -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 md:px-10 py-3 sticky top-0 z-50">
+            <div class="flex items-center gap-4 md:gap-8">
+                <div class="flex items-center gap-3 text-slate-900 dark:text-white">
+                    <div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+                        <span class="material-symbols-outlined">church</span>
+                    </div>
+                    <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight hidden sm:block">Mothers' Union</h2>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="dashboard.html">Home</a>
+                    <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="transactions-new.html">Record Transaction</a>
+                    <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="transactions.html">Records</a>
+                    <a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="reports.html">Reports</a>
+                </nav>
+            </div>
+            <div class="flex flex-1 justify-end gap-4 items-center">
+                <label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden border border-slate-200 dark:border-slate-700">
+                        <div class="text-slate-400 flex items-center justify-center pl-4 bg-slate-50 dark:bg-slate-800">
+                            <span class="material-symbols-outlined text-xl">search</span>
+                        </div>
+                        <input id="searchInput" class="form-input flex w-full min-w-0 flex-1 border-none bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-0 px-3 text-sm" placeholder="Search Help..." value=""/>
+                    </div>
+                </label>
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary cursor-pointer" data-alt="Profile picture of user" id="profileDropdown" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQDsoz2wOsFGp04qt3jiXAYFBkJEmvUVjtvWWiKA2aIx02d9-Zxc00tb9oMQDITHNYXF33P39IbGd0I7-2ZLGjd6l-YjVLBd4gM6KCf5m3oGAnAJ3-FpZgE_krPJ-TT-Ld8G3VE8f1pq9z9cyzH8hTp24aK4mkFgRP3h7motacYLLAtATQHITkTILd0-4-3fLM9lV44b-u4fPb3byovyamrsVRf37BAlN07gCUdnKPWAmK0HSpcrgeP3XczNzGrYmY-hn5f-VdCjQ3");'></div>
+                
+                <!-- Profile Dropdown Menu (Hidden by default) -->
+                <div id="profileMenu" class="hidden absolute top-16 right-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 w-48 z-50">
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                        <p class="font-semibold text-slate-900 dark:text-white">Naomi M.</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Treasurer</p>
+                    </div>
+                    <a href="setting.html" class="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-300">
+                        <span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+                    <button id="logoutBtn" class="flex items-center gap-3 p-3 w-full text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 text-red-600 dark:text-red-400">
+                        <span class="material-symbols-outlined">logout</span>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <div class="max-w-4xl mx-auto px-6 py-12 text-center">
+                <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-extrabold leading-tight mb-6">How can we help you today?</h1>
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="flex items-center w-full h-14 bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 border-transparent focus-within:border-primary overflow-hidden transition-all">
+                        <div class="pl-5 text-slate-400">
+                            <span class="material-symbols-outlined text-2xl">search</span>
+                        </div>
+                        <input id="mainSearchInput" class="w-full h-full bg-transparent border-none focus:ring-0 px-4 text-lg placeholder:text-slate-400 text-slate-900 dark:text-white" placeholder="Search for tutorials, guides, or FAQs..."/>
+                        <button id="searchButton" class="mr-2 px-6 py-2 bg-primary hover:bg-primary/90 text-slate-900 font-bold rounded-lg transition-colors">
                             Find
                         </button>
-</div>
-</div>
-<p class="mt-4 text-slate-500 dark:text-slate-400 text-sm">Common topics: <span class="text-primary font-medium underline cursor-pointer">Recording Collections</span>, <span class="text-primary font-medium underline cursor-pointer">Monthly Report</span></p>
-</div>
-<!-- Core Task Cards -->
-<div class="max-w-5xl mx-auto px-6 py-8">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<!-- Card 1 -->
-<div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
-<div class="size-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-all">
-<span class="material-symbols-outlined text-4xl">payments</span>
-</div>
-<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">How to Record Money In/Out</h3>
-<p class="text-slate-600 dark:text-slate-400 leading-relaxed">Simple steps to track collections, donations, and expenses.</p>
-<div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
+                    </div>
+                </div>
+                <p class="mt-4 text-slate-500 dark:text-slate-400 text-sm">Common topics: 
+                    <button class="text-primary font-medium underline cursor-pointer hover:text-primary/80" data-search="Recording Collections">Recording Collections</button>, 
+                    <button class="text-primary font-medium underline cursor-pointer hover:text-primary/80" data-search="Monthly Report">Monthly Report</button>
+                </p>
+            </div>
+
+            <!-- Core Task Cards -->
+            <div class="max-w-5xl mx-auto px-6 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <button id="recordMoneyCard" class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
+                        <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-4xl">payments</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">How to Record Money In/Out</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Simple steps to track collections, donations, and expenses.</p>
+                        <div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
                             Learn how <span class="material-symbols-outlined ml-1">chevron_right</span>
-</div>
-</div>
-<!-- Card 2 -->
-<div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
-<div class="size-16 bg-gold/10 rounded-full flex items-center justify-center text-gold mb-6 group-hover:bg-gold group-hover:text-white transition-all">
-<span class="material-symbols-outlined text-4xl">description</span>
-</div>
-<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Viewing Financial Reports</h3>
-<p class="text-slate-600 dark:text-slate-400 leading-relaxed">How to check your balance and print monthly statements.</p>
-<div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
+                        </div>
+                    </button>
+
+                    <!-- Card 2 -->
+                    <button id="reportsCard" class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
+                        <div class="size-16 bg-gold/10 rounded-full flex items-center justify-center text-gold mb-6 group-hover:bg-gold group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-4xl">description</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Viewing Financial Reports</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">How to check your balance and print monthly statements.</p>
+                        <div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
                             View guides <span class="material-symbols-outlined ml-1">chevron_right</span>
-</div>
-</div>
-<!-- Card 3 -->
-<div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
-<div class="size-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-500 mb-6 group-hover:bg-slate-900 dark:group-hover:bg-white dark:group-hover:text-slate-900 group-hover:text-white transition-all">
-<span class="material-symbols-outlined text-4xl">person</span>
-</div>
-<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Managing Your Account</h3>
-<p class="text-slate-600 dark:text-slate-400 leading-relaxed">Update your name, contact details, and secure your password.</p>
-<div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
+                        </div>
+                    </button>
+
+                    <!-- Card 3 -->
+                    <button id="accountCard" class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center group">
+                        <div class="size-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-500 mb-6 group-hover:bg-slate-900 dark:group-hover:bg-white dark:group-hover:text-slate-900 group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-4xl">person</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Managing Your Account</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Update your name, contact details, and secure your password.</p>
+                        <div class="mt-6 flex items-center text-primary font-bold group-hover:translate-x-1 transition-transform">
                             Manage profile <span class="material-symbols-outlined ml-1">chevron_right</span>
-</div>
-</div>
-</div>
-</div>
-<!-- FAQ Section -->
-<div class="max-w-3xl mx-auto px-6 py-16">
-<div class="flex items-center gap-3 mb-8">
-<span class="material-symbols-outlined text-primary text-3xl">quiz</span>
-<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Frequently Asked Questions</h2>
-</div>
-<div class="space-y-4">
-<!-- FAQ 1 -->
-<div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-<button class="w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-<span>What if I made a mistake in a record?</span>
-<span class="material-symbols-outlined">expand_more</span>
-</button>
-<div class="px-5 pb-5 text-slate-600 dark:text-slate-400 hidden">
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="max-w-3xl mx-auto px-6 py-16">
+                <div class="flex items-center gap-3 mb-8">
+                    <span class="material-symbols-outlined text-primary text-3xl">quiz</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Frequently Asked Questions</h2>
+                </div>
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <button class="faq-question w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <span>What if I made a mistake in a record?</span>
+                            <span class="material-symbols-outlined faq-icon">expand_more</span>
+                        </button>
+                        <div class="faq-answer px-5 pb-5 text-slate-600 dark:text-slate-400">
                             You can edit any record within 24 hours of entry. Simply go to 'Records', find the transaction, and click 'Edit'. For older records, please contact your administrator.
                         </div>
-</div>
-<!-- FAQ 2 -->
-<div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-<button class="w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-<span>How do I print my monthly report?</span>
-<span class="material-symbols-outlined">expand_more</span>
-</button>
-</div>
-<!-- FAQ 3 -->
-<div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-<button class="w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-<span>Who can see my financial data?</span>
-<span class="material-symbols-outlined">expand_more</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Contact Section -->
-<div class="bg-primary/10 dark:bg-primary/5 py-16 px-6">
-<div class="max-w-4xl mx-auto text-center">
-<div class="size-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-primary mx-auto mb-6 shadow-md border-2 border-primary">
-<span class="material-symbols-outlined text-3xl">support_agent</span>
-</div>
-<h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Still need help?</h2>
-<p class="text-slate-600 dark:text-slate-400 mb-8 max-w-lg mx-auto">If you can't find what you're looking for, speak directly to the ACK Christ the King Administrator for personal assistance.</p>
-<button class="bg-primary hover:bg-primary/90 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2 mx-auto">
-<span class="material-symbols-outlined">chat</span>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="faq-item bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <button class="faq-question w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <span>How do I print my monthly report?</span>
+                            <span class="material-symbols-outlined faq-icon">expand_more</span>
+                        </button>
+                        <div class="faq-answer px-5 pb-5 text-slate-600 dark:text-slate-400">
+                            Go to 'Reports' section, select the month you want, then click the 'Print' button at the top-right corner. Make sure your printer is connected before printing.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="faq-item bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <button class="faq-question w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <span>Who can see my financial data?</span>
+                            <span class="material-symbols-outlined faq-icon">expand_more</span>
+                        </button>
+                        <div class="faq-answer px-5 pb-5 text-slate-600 dark:text-slate-400">
+                            Only authorized Mothers' Union officials (Chairlady, Secretary, Treasurer) can access financial data. All data is encrypted and securely stored.
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="faq-item bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <button class="faq-question w-full flex items-center justify-between p-5 text-left font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <span>How do I reset my password?</span>
+                            <span class="material-symbols-outlined faq-icon">expand_more</span>
+                        </button>
+                        <div class="faq-answer px-5 pb-5 text-slate-600 dark:text-slate-400">
+                            Click on 'Forgot Password' on the login page, enter your email, and follow the instructions sent to your email. Contact admin if you don't receive the reset email.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="bg-primary/10 dark:bg-primary/5 py-16 px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="size-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-primary mx-auto mb-6 shadow-md border-2 border-primary">
+                        <span class="material-symbols-outlined text-3xl">support_agent</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Still need help?</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-lg mx-auto">If you can't find what you're looking for, speak directly to the ACK Christ the King Administrator for personal assistance.</p>
+                    <button id="contactAdminBtn" class="bg-primary hover:bg-primary/90 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2 mx-auto">
+                        <span class="material-symbols-outlined">chat</span>
                         Contact Admin Now
                     </button>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-10 py-8">
-<div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">church</span>
-<span class="text-slate-900 dark:text-white font-bold">ACK Christ the King Mothers' Union</span>
-</div>
-<div class="flex gap-8 text-sm text-slate-500 dark:text-slate-400">
-<a class="hover:text-primary" href="#">User Guide</a>
-<a class="hover:text-primary" href="#">Privacy Policy</a>
-<a class="hover:text-primary" href="#">System Status</a>
-</div>
-<p class="text-sm text-slate-400">© 2026 Help Center</p>
-</div>
-</footer>
-</div>
-</body></html>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-10 py-8">
+            <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">church</span>
+                    <span class="text-slate-900 dark:text-white font-bold">ACK Christ the King Mothers' Union</span>
+                </div>
+                <div class="flex gap-8 text-sm text-slate-500 dark:text-slate-400">
+                    <a class="hover:text-primary cursor-pointer" id="userGuideLink">User Guide</a>
+                    <a class="hover:text-primary cursor-pointer" id="privacyLink">Privacy Policy</a>
+                    <a class="hover:text-primary cursor-pointer" id="statusLink">System Status</a>
+                </div>
+                <p class="text-sm text-slate-400">© 2026 Help Center</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Contact Admin</h3>
+                <button id="closeModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Your Message</label>
+                    <textarea id="messageInput" class="w-full h-32 p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white resize-none" placeholder="Describe your issue or question..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Your Email (optional)</label>
+                    <input id="emailInput" type="email" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white" placeholder="you@example.com">
+                </div>
+                <button id="sendMessageBtn" class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">send</span>
+                    Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ====================
+            // 1. TOAST NOTIFICATIONS
+            // ====================
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined">
+                        ${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}
+                    </span>
+                    <span>${message}</span>
+                `;
+                toastContainer.appendChild(toast);
+                
+                // Show toast
+                setTimeout(() => toast.classList.add('show'), 10);
+                
+                // Remove toast after 5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            // ====================
+            // 2. PROFILE DROPDOWN
+            // ====================
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileMenu = document.getElementById('profileMenu');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Toggle profile menu
+            profileDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+
+            // Close profile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!profileMenu.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileMenu.classList.add('hidden');
+                }
+            });
+
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    // Clear login state
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('userRole');
+                    
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // ====================
+            // 3. SEARCH FUNCTIONALITY
+            // ====================
+            const searchInput = document.getElementById('searchInput');
+            const mainSearchInput = document.getElementById('mainSearchInput');
+            const searchButton = document.getElementById('searchButton');
+            const searchLinks = document.querySelectorAll('[data-search]');
+
+            // Search function
+            function performSearch(query) {
+                if (!query.trim()) {
+                    showToast('Please enter a search term', 'error');
+                    return;
+                }
+
+                showToast(`Searching for "${query}"...`);
+                
+                // Simple search simulation
+                const faqItems = document.querySelectorAll('.faq-item');
+                let found = false;
+                
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                    
+                    if (question.includes(query.toLowerCase()) || answer.includes(query.toLowerCase())) {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        item.style.boxShadow = '0 0 0 2px #13ec37';
+                        setTimeout(() => item.style.boxShadow = '', 3000);
+                        found = true;
+                    }
+                });
+
+                if (!found) {
+                    showToast('No results found for your search', 'error');
+                }
+            }
+
+            // Search button click
+            searchButton.addEventListener('click', () => {
+                performSearch(mainSearchInput.value);
+            });
+
+            // Enter key in search inputs
+            [searchInput, mainSearchInput].forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        performSearch(input.value);
+                    }
+                });
+            });
+
+            // Quick search links
+            searchLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const searchTerm = link.getAttribute('data-search');
+                    mainSearchInput.value = searchTerm;
+                    performSearch(searchTerm);
+                });
+            });
+
+            // ====================
+            // 4. FAQ TOGGLE FUNCTIONALITY
+            // ====================
+            const faqQuestions = document.querySelectorAll('.faq-question');
+
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const faqItem = this.closest('.faq-item');
+                    const answer = faqItem.querySelector('.faq-answer');
+                    const icon = this.querySelector('.faq-icon');
+                    
+                    // Close all other FAQ items
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        if (item !== faqItem) {
+                            item.querySelector('.faq-answer').classList.remove('open');
+                            item.querySelector('.faq-icon').textContent = 'expand_more';
+                        }
+                    });
+                    
+                    // Toggle current FAQ
+                    answer.classList.toggle('open');
+                    icon.textContent = answer.classList.contains('open') ? 'expand_less' : 'expand_more';
+                });
+            });
+
+            // ====================
+            // 5. CARD CLICK FUNCTIONALITY
+            // ====================
+            const recordMoneyCard = document.getElementById('recordMoneyCard');
+            const reportsCard = document.getElementById('reportsCard');
+            const accountCard = document.getElementById('accountCard');
+
+            recordMoneyCard.addEventListener('click', () => {
+                showToast('Opening Recording Money tutorial...');
+                // Scroll to relevant FAQ
+                document.querySelectorAll('.faq-question')[0].click();
+                setTimeout(() => {
+                    document.querySelectorAll('.faq-item')[0].scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+
+            reportsCard.addEventListener('click', () => {
+                showToast('Opening Reports tutorial...');
+                // Scroll to relevant FAQ
+                document.querySelectorAll('.faq-question')[1].click();
+                setTimeout(() => {
+                    document.querySelectorAll('.faq-item')[1].scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+
+            accountCard.addEventListener('click', () => {
+                showToast('Opening Account Management guide...');
+                // Redirect to settings page
+                setTimeout(() => {
+                    window.location.href = 'setting.html';
+                }, 1000);
+            });
+
+            // ====================
+            // 6. CONTACT ADMIN MODAL
+            // ====================
+            const contactAdminBtn = document.getElementById('contactAdminBtn');
+            const contactModal = document.getElementById('contactModal');
+            const closeModal = document.getElementById('closeModal');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const messageInput = document.getElementById('messageInput');
+            const emailInput = document.getElementById('emailInput');
+
+            // Open modal
+            contactAdminBtn.addEventListener('click', () => {
+                contactModal.classList.remove('hidden');
+                messageInput.focus();
+            });
+
+            // Close modal
+            closeModal.addEventListener('click', () => {
+                contactModal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            contactModal.addEventListener('click', (e) => {
+                if (e.target === contactModal) {
+                    contactModal.classList.add('hidden');
+                }
+            });
+
+            // Send message
+            sendMessageBtn.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+                const email = emailInput.value.trim();
+
+                if (!message) {
+                    showToast('Please enter a message', 'error');
+                    return;
+                }
+
+                if (email && !isValidEmail(email)) {
+                    showToast('Please enter a valid email address', 'error');
+                    return;
+                }
+
+                // Simulate sending message
+                sendMessageBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Sending...';
+                sendMessageBtn.disabled = true;
+
+                setTimeout(() => {
+                    // Save to localStorage (simulating message sent)
+                    const helpMessages = JSON.parse(localStorage.getItem('helpMessages') || '[]');
+                    helpMessages.push({
+                        message: message,
+                        email: email || 'Not provided',
+                        timestamp: new Date().toISOString(),
+                        status: 'pending'
+                    });
+                    localStorage.setItem('helpMessages', JSON.stringify(helpMessages));
+
+                    // Reset form
+                    messageInput.value = '';
+                    emailInput.value = '';
+                    
+                    // Show success
+                    sendMessageBtn.innerHTML = '<span class="material-symbols-outlined">send</span> Send Message';
+                    sendMessageBtn.disabled = false;
+                    
+                    contactModal.classList.add('hidden');
+                    showToast('Message sent! Admin will contact you soon.', 'success');
+                }, 1500);
+            });
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // ====================
+            // 7. FOOTER LINKS
+            // ====================
+            const userGuideLink = document.getElementById('userGuideLink');
+            const privacyLink = document.getElementById('privacyLink');
+            const statusLink = document.getElementById('statusLink');
+
+            userGuideLink.addEventListener('click', () => {
+                showToast('Opening User Guide PDF...');
+                // Simulate opening PDF
+                setTimeout(() => {
+                    window.open('#', '_blank');
+                }, 500);
+            });
+
+            privacyLink.addEventListener('click', () => {
+                showToast('Opening Privacy Policy...');
+                // Could open a modal or new page
+                setTimeout(() => {
+                    alert('Privacy Policy: Your data is secure and only used for Mothers\' Union operations.');
+                }, 500);
+            });
+
+            statusLink.addEventListener('click', () => {
+                showToast('Checking system status...');
+                setTimeout(() => {
+                    showToast('✅ All systems operational', 'success');
+                }, 1000);
+            });
+
+            // ====================
+            // 8. DARK MODE TOGGLE (Optional)
+            // ====================
+            // Check for saved theme preference
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+
+            // ====================
+            // 9. WELCOME MESSAGE
+            // ====================
+            // Show welcome message on first visit
+            if (!localStorage.getItem('helpCenterVisited')) {
+                setTimeout(() => {
+                    showToast('Welcome to the Help Center! Browse FAQs or contact admin for assistance.', 'info');
+                    localStorage.setItem('helpCenterVisited', 'true');
+                }, 1000);
+            }
+
+            // ====================
+            // 10. KEYBOARD SHORTCUTS
+            // ====================
+            document.addEventListener('keydown', (e) => {
+                // Ctrl + / to focus search
+                if (e.ctrlKey && e.key === '/') {
+                    e.preventDefault();
+                    mainSearchInput.focus();
+                }
+                
+                // Escape to close modals/dropdowns
+                if (e.key === 'Escape') {
+                    profileMenu.classList.add('hidden');
+                    contactModal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

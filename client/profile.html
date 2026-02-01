@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>My Profile | Mothers' Union</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf26",
+                        "accent-gold": "#d4af37",
+                        "soft-red": "#ef4444",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112112",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        body {
+            font-family: "Lexend", sans-serif
+        }
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+        }
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            background-color: #10b981;
+        }
+        .toast.error {
+            background-color: #ef4444;
+        }
+        .toast.info {
+            background-color: #3b82f6;
+        }
+        .toast.warning {
+            background-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111812] dark:text-white">
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-[#1a2a1a] border-b border-[#dce5dc] dark:border-[#2a3a2a] px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo and Title -->
+            <div class="flex items-center gap-3">
+                <div class="size-10 text-primary">
+                    <span class="material-symbols-outlined text-4xl">account_balance</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Mothers' Union Finance</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Profile Settings</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex items-center gap-4">
+                <nav class="hidden md:flex items-center gap-6 mr-4">
+                    <a href="dashboard.html" class="text-sm font-medium text-[#111812] dark:text-white hover:text-primary transition-colors">Dashboard</a>
+                    <a href="profile.html" class="text-sm font-bold text-primary border-b-2 border-primary pb-1">Profile</a>
+                    <a href="settings.html" class="text-sm font-medium text-[#111812] dark:text-white hover:text-primary transition-colors">Settings</a>
+                </nav>
+                
+                <!-- Dynamic User Profile -->
+                <div id="userProfile" class="flex items-center gap-3">
+                    <!-- Profile content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-[#111812] dark:text-white mb-2">My Profile</h1>
+            <p class="text-[#638866] dark:text-[#a3c3a6]">Manage your personal information and preferences</p>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Profile Card -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] p-6 sticky top-24">
+                    <!-- Profile Picture -->
+                    <div class="flex flex-col items-center mb-6">
+                        <div id="profilePicture" class="size-32 rounded-full bg-gradient-to-br from-primary to-accent-gold flex items-center justify-center text-white text-4xl font-bold mb-4">
+                            <!-- Initials will be loaded here -->
+                        </div>
+                        <h2 id="profileName" class="text-xl font-bold text-[#111812] dark:text-white">Loading...</h2>
+                        <p id="profileRole" class="text-sm text-[#638866] dark:text-[#a3c3a6]">Loading...</p>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center justify-between p-3 bg-primary/5 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">calendar_today</span>
+                                <span class="text-sm">Member Since</span>
+                            </div>
+                            <span id="memberSince" class="text-sm font-medium">2024</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-accent-gold/5 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-accent-gold">verified</span>
+                                <span class="text-sm">Account Status</span>
+                            </div>
+                            <span id="accountStatus" class="text-sm font-medium text-primary">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-500/5 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-500">admin_panel_settings</span>
+                                <span class="text-sm">Access Level</span>
+                            </div>
+                            <span id="accessLevel" class="text-sm font-medium">Treasurer</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="space-y-2">
+                        <button id="changePhotoBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
+                            <span class="material-symbols-outlined text-sm">photo_camera</span>
+                            Change Profile Photo
+                        </button>
+                        <button id="changePasswordBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#111812]/10 dark:bg-white/10 text-[#111812] dark:text-white rounded-lg hover:bg-[#111812]/20 dark:hover:bg-white/20 transition-colors text-sm font-medium">
+                            <span class="material-symbols-outlined text-sm">lock</span>
+                            Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Forms -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Personal Information Form -->
+                <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-[#111812] dark:text-white">Personal Information</h3>
+                            <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Update your basic information</p>
+                        </div>
+                        <span class="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">Required</span>
+                    </div>
+
+                    <form id="personalInfoForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-[#111812] dark:text-white mb-2">Full Name *</label>
+                                <input type="text" id="fullName" required
+                                    class="w-full px-4 py-3 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111812] dark:text-white mb-2">Email Address *</label>
+                                <input type="email" id="email" required
+                                    class="w-full px-4 py-3 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-[#111812] dark:text-white mb-2">Phone Number</label>
+                                <input type="tel" id="phone"
+                                    class="w-full px-4 py-3 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111812] dark:text-white mb-2">Role</label>
+                                <select id="role" disabled
+                                    class="w-full px-4 py-3 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <option value="treasurer">Treasurer</option>
+                                    <option value="accountant">Accountant</option>
+                                    <option value="member">Member</option>
+                                    <option value="admin">Administrator</option>
+                                </select>
+                                <p class="text-xs text-[#638866] mt-1">Role can only be changed by administrator</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-[#111812] dark:text-white mb-2">Address</label>
+                            <textarea id="address" rows="3"
+                                class="w-full px-4 py-3 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" 
+                                class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-[#dce5dc] dark:border-[#2a3a2a] p-6">
+                    <h3 class="text-lg font-bold text-[#111812] dark:text-white mb-6">Notification Preferences</h3>
+
+                    <form id="notificationForm" class="space-y-4">
+                        <div class="flex items-center justify-between p-4 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg">
+                            <div>
+                                <p class="font-medium text-[#111812] dark:text-white">Email Notifications</p>
+                                <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Receive updates via email</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="emailNotifications" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg">
+                            <div>
+                                <p class="font-medium text-[#111812] dark:text-white">SMS Notifications</p>
+                                <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Receive important alerts via SMS</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="smsNotifications" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg">
+                            <div>
+                                <p class="font-medium text-[#111812] dark:text-white">Monthly Reports</p>
+                                <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Receive monthly financial summaries</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="monthlyReports" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex justify-end mt-6">
+                            <button type="submit" 
+                                class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors">
+                                Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="bg-white dark:bg-[#1a2a1a] rounded-xl border border-red-200 dark:border-red-800 p-6">
+                    <h3 class="text-lg font-bold text-soft-red dark:text-red-400 mb-2">Danger Zone</h3>
+                    <p class="text-sm text-[#638866] dark:text-[#a3c3a6] mb-6">Irreversible actions - proceed with caution</p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 border border-red-200 dark:border-red-800 rounded-lg">
+                            <div>
+                                <p class="font-medium text-[#111812] dark:text-white">Delete Account</p>
+                                <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Permanently delete your account and all data</p>
+                            </div>
+                            <button id="deleteAccountBtn" 
+                                class="px-4 py-2 border border-soft-red text-soft-red rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium">
+                                Delete Account
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 border border-red-200 dark:border-red-800 rounded-lg">
+                            <div>
+                                <p class="font-medium text-[#111812] dark:text-white">Export Data</p>
+                                <p class="text-sm text-[#638866] dark:text-[#a3c3a6]">Download all your personal data</p>
+                            </div>
+                            <button id="exportDataBtn" 
+                                class="px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
+                                Export Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 py-8 border-t border-[#dce5dc] dark:border-[#2a3a2a] bg-white dark:bg-[#1a2a1a]">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-[#638866] text-sm">© <span id="currentYear">2024</span> Mothers' Union Anglican Diocese. Profile settings are encrypted and secure.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Function to show toast notifications
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">
+                        ${type === 'success' ? 'check_circle' : 
+                          type === 'error' ? 'error' :
+                          type === 'warning' ? 'warning' : 'info'}
+                    </span>
+                    <span>${message}</span>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Function to check authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                showToast('Please login first', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Function to update user profile in header
+        function updateUserProfile() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const userProfileDiv = document.getElementById('userProfile');
+            
+            if (!userProfileDiv) return;
+            
+            let userName = 'Guest';
+            let userEmail = '';
+            let userRole = 'Member';
+            
+            if (currentUser) {
+                userName = currentUser.fullName || currentUser.name || 'Guest';
+                userEmail = currentUser.email || '';
+                userRole = currentUser.role || 'Member';
+            }
+            
+            // Create initials from name
+            const initials = userName
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+            
+            userProfileDiv.innerHTML = `
+                <div class="hidden md:flex flex-col items-end">
+                    <span class="text-sm font-semibold text-[#111812] dark:text-white">${userName}</span>
+                    <span class="text-xs text-[#638866] dark:text-[#a3c3a6]">${userRole} ${userEmail ? '• ' + userEmail : ''}</span>
+                </div>
+                <div class="relative group">
+                    <div class="size-10 rounded-full bg-gradient-to-br from-primary to-accent-gold flex items-center justify-center text-white font-bold text-lg cursor-pointer">
+                        ${initials || 'U'}
+                    </div>
+                    <!-- Dropdown menu -->
+                    <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1a2a1a] border border-[#dce5dc] dark:border-[#2a3a2a] rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <div class="px-4 py-2 border-b border-[#dce5dc] dark:border-[#2a3a2a]">
+                            <p class="font-semibold text-sm">${userName}</p>
+                            <p class="text-xs text-[#638866] truncate">${userEmail || 'No email'}</p>
+                        </div>
+                        <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-sm">account_circle</span>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-sm">dashboard</span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="settings.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                            <span class="material-symbols-outlined text-sm">settings</span>
+                            <span>Settings</span>
+                        </a>
+                        <div class="border-t border-[#dce5dc] dark:border-[#2a3a2a] mt-2 pt-2">
+                            <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-soft-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                <span class="material-symbols-outlined text-sm">logout</span>
+                                <span>Logout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (confirm('Are you sure you want to logout?')) {
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('userRole');
+                        showToast('Logged out successfully', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1500);
+                    }
+                });
+            }
+        }
+
+        // Function to load profile data
+        function loadProfileData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            
+            // Merge current user data with profile data
+            const profileData = { ...currentUser, ...userProfile };
+            
+            // Update profile card
+            const profileName = document.getElementById('profileName');
+            const profileRole = document.getElementById('profileRole');
+            const profilePicture = document.getElementById('profilePicture');
+            const memberSince = document.getElementById('memberSince');
+            const accountStatus = document.getElementById('accountStatus');
+            const accessLevel = document.getElementById('accessLevel');
+            
+            if (profileName) {
+                profileName.textContent = profileData.fullName || profileData.name || 'Guest User';
+            }
+            
+            if (profileRole) {
+                profileRole.textContent = profileData.role || 'Member';
+            }
+            
+            if (profilePicture) {
+                const initials = (profileData.fullName || profileData.name || 'GU')
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                profilePicture.textContent = initials;
+            }
+            
+            if (memberSince) {
+                memberSince.textContent = profileData.memberSince || '2024';
+            }
+            
+            if (accountStatus) {
+                accountStatus.textContent = profileData.status || 'Active';
+            }
+            
+            if (accessLevel) {
+                accessLevel.textContent = profileData.role || 'Treasurer';
+            }
+            
+            // Update form fields
+            document.getElementById('fullName').value = profileData.fullName || profileData.name || '';
+            document.getElementById('email').value = profileData.email || '';
+            document.getElementById('phone').value = profileData.phone || '';
+            document.getElementById('role').value = profileData.role?.toLowerCase() || 'treasurer';
+            document.getElementById('address').value = profileData.address || '';
+            
+            // Load notification preferences
+            const notifications = JSON.parse(localStorage.getItem('userNotifications') || '{}');
+            document.getElementById('emailNotifications').checked = notifications.email !== false;
+            document.getElementById('smsNotifications').checked = notifications.sms || false;
+            document.getElementById('monthlyReports').checked = notifications.monthlyReports !== false;
+            
+            // Update current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+
+        // Function to save profile data
+        function saveProfileData(formData) {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                
+                // Update user data
+                const updatedUser = {
+                    ...currentUser,
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    address: formData.address,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+                
+                return true;
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                return false;
+            }
+        }
+
+        // Function to save notification preferences
+        function saveNotificationPreferences(formData) {
+            try {
+                const notifications = {
+                    email: formData.emailNotifications,
+                    sms: formData.smsNotifications,
+                    monthlyReports: formData.monthlyReports,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('userNotifications', JSON.stringify(notifications));
+                return true;
+            } catch (error) {
+                console.error('Error saving notifications:', error);
+                return false;
+            }
+        }
+
+        // Function to export user data
+        function exportUserData() {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                const notifications = JSON.parse(localStorage.getItem('userNotifications') || '{}');
+                
+                const exportData = {
+                    userProfile: { ...currentUser, ...userProfile },
+                    notifications: notifications,
+                    exportDate: new Date().toISOString()
+                };
+                
+                // Create and download JSON file
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mothers-union-profile-${new Date().getTime()}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                return true;
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                return false;
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!checkAuth()) {
+                return;
+            }
+            
+            // Update header profile
+            updateUserProfile();
+            
+            // Load profile data
+            loadProfileData();
+            
+            // Handle personal info form submission
+            document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim()
+                };
+                
+                // Basic validation
+                if (!formData.fullName || !formData.email) {
+                    showToast('Please fill in required fields (Name and Email)', 'error');
+                    return;
+                }
+                
+                if (saveProfileData(formData)) {
+                    showToast('Profile updated successfully!', 'success');
+                    // Update header and profile card
+                    updateUserProfile();
+                    loadProfileData();
+                } else {
+                    showToast('Error saving profile. Please try again.', 'error');
+                }
+            });
+            
+            // Handle notification form submission
+            document.getElementById('notificationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    emailNotifications: document.getElementById('emailNotifications').checked,
+                    smsNotifications: document.getElementById('smsNotifications').checked,
+                    monthlyReports: document.getElementById('monthlyReports').checked
+                };
+                
+                if (saveNotificationPreferences(formData)) {
+                    showToast('Notification preferences saved!', 'success');
+                } else {
+                    showToast('Error saving preferences', 'error');
+                }
+            });
+            
+            // Handle change photo button
+            document.getElementById('changePhotoBtn').addEventListener('click', function() {
+                showToast('Profile photo upload feature coming soon!', 'info');
+            });
+            
+            // Handle change password button
+            document.getElementById('changePasswordBtn').addEventListener('click', function() {
+                const newPassword = prompt('Enter new password:');
+                if (newPassword && newPassword.length >= 6) {
+                    showToast('Password changed successfully!', 'success');
+                } else if (newPassword !== null) {
+                    showToast('Password must be at least 6 characters', 'error');
+                }
+            });
+            
+            // Handle export data button
+            document.getElementById('exportDataBtn').addEventListener('click', function() {
+                if (exportUserData()) {
+                    showToast('Data exported successfully!', 'success');
+                } else {
+                    showToast('Error exporting data', 'error');
+                }
+            });
+            
+            // Handle delete account button
+            document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+                const confirmDelete = confirm('WARNING: This will permanently delete your account and all associated data. This action cannot be undone.\n\nType DELETE to confirm:');
+                if (confirmDelete) {
+                    const userInput = prompt('Please type DELETE to confirm account deletion:');
+                    if (userInput === 'DELETE') {
+                        // Clear user data
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('userRole');
+                        localStorage.removeItem('userProfile');
+                        localStorage.removeItem('userNotifications');
+                        
+                        showToast('Account deleted successfully', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        showToast('Account deletion cancelled', 'info');
+                    }
+                }
+            });
+            
+            // Show welcome message
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const userName = currentUser.fullName || currentUser.name || 'there';
+            setTimeout(() => {
+                showToast(`Welcome to your profile, ${userName}!`, 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

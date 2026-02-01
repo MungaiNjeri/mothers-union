@@ -62,6 +62,13 @@
         .toast.info {
             background-color: #3b82f6;
         }
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111812] dark:text-white">
@@ -115,13 +122,8 @@
                 </nav>
                 
                 <div class="pt-6 border-t border-[#e5e7eb] dark:border-[#2d3a2d]">
-                    <!-- Settings Link -->
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#111812] dark:text-white hover:bg-[#f0f4f1] dark:hover:bg-primary/10 transition-colors" href="setting.html">
-                        <span class="material-symbols-outlined">settings</span>
-                        <span class="text-sm font-medium">Setting</span>
-                    </a>
-
-                    <button class="w-full mt-4 bg-primary text-white font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2">
+                    <!-- Help Center Link -->
+                    <button onclick="window.location.href='helpcenter.html'" class="w-full bg-primary text-white font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
                         <span class="material-symbols-outlined text-sm">help</span>
                         Help Center
                     </button>
@@ -142,9 +144,15 @@
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
                         <input class="pl-10 pr-4 py-2 bg-[#f0f4f1] dark:bg-[#1a2e1a] border-none rounded-lg text-sm focus:ring-2 focus:ring-primary w-64" placeholder="Search entries..." type="text"/>
                     </div>
-                    <div class="flex items-center gap-3 border-l border-[#e5e7eb] dark:border-[#2d3a2d] pl-6">
-                        <span class="text-sm font-medium hidden sm:inline">Naomi</span>
-                        <div class="size-9 rounded-full bg-cover bg-center ring-2 ring-primary/20" data-alt="Portrait of the church treasurer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBChU5PJLBD4rrMemdGZj51QfaeoVtDkxS0erC26NvJZy_e9dQ-Rog-VEjCV0rUbuxn5VdtVd0vkkLcYi_lGROV103b_bZ-IKMpWLMcJBsTqIWmNxgMm5iGamiNSII1bUliBe9g-Ra3MEKti91YJuK-VmeDGzuPFOPpNJHfcBmEDB2to-M9i2iG7MngbqIsDkqsBkh3aanPm5D-_QxYq5PxwbYlvUr0eP5FHvKBCwxGkllZok5_ZFb9Dg07H4uFHWFUR3MSzZePEw')"></div>
+                    
+                    <!-- Help Center Icon Link -->
+                    <a href="helpcenter.html" class="flex items-center justify-center size-10 rounded-lg hover:bg-[#f0f4f1] dark:hover:bg-[#1a2e1a] transition-colors" title="Help Center">
+                        <span class="material-symbols-outlined text-gray-600 dark:text-gray-300 hover:text-primary">help</span>
+                    </a>
+                    
+                    <!-- User Profile Section -->
+                    <div id="userProfile" class="flex items-center gap-3 border-l border-[#e5e7eb] dark:border-[#2d3a2d] pl-6">
+                        <!-- Profile content will be loaded here -->
                     </div>
                 </div>
             </header>
@@ -221,7 +229,7 @@
                                     </label>
                                     <div class="relative">
                                         <select id="categorySelect" name="category" class="w-full h-12 px-4 rounded-lg border-[#e5e7eb] dark:border-[#2d3a2d] dark:bg-[#1a2e1a] focus:ring-primary focus:border-primary appearance-none" required>
-                                            <option value="Tithe">Tithe</option>
+                                            <option value="Tithe">Welfare</option>
                                             <option value="Offering">Offering</option>
                                             <option value="Project Fund">Project Fund</option>
                                             <option value="Membership Fee">Membership Fee</option>
@@ -325,22 +333,103 @@
     <script>
         // Initialize variables and event listeners when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateInput').value = today;
-            
-            // Get DOM elements
-            const transactionForm = document.getElementById('transactionForm');
-            const amountInput = document.getElementById('amountInput');
-            const sourceSelect = document.getElementById('sourceSelect');
-            const categorySelect = document.getElementById('categorySelect');
-            const newMemberContainer = document.getElementById('newMemberContainer');
-            const newMemberInput = document.getElementById('newMemberInput');
-            const otherCategoryContainer = document.getElementById('otherCategoryContainer');
-            const otherCategoryInput = document.getElementById('otherCategoryInput');
-            const summaryText = document.getElementById('summaryText');
-            const txTypeRadios = document.querySelectorAll('input[name="tx_type"]');
-            
+            // Function to update user profile in header
+            function updateUserProfile() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const userProfileDiv = document.getElementById('userProfile');
+                
+                if (!userProfileDiv) return;
+                
+                let userName = 'Guest';
+                let userEmail = '';
+                let userRole = 'Member';
+                
+                if (currentUser) {
+                    userName = currentUser.fullName || currentUser.name || 'Guest';
+                    userEmail = currentUser.email || '';
+                    userRole = currentUser.role || 'Member';
+                }
+                
+                // Create initials from name
+                let initials = userName
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                
+                // If no initials from name, use first letter of email
+                if (!initials && userEmail) {
+                    initials = userEmail.charAt(0).toUpperCase();
+                }
+                
+                // Update profile HTML
+                userProfileDiv.innerHTML = `
+                    <div class="hidden md:flex flex-col items-end">
+                        <span class="text-sm font-semibold text-[#111812] dark:text-white">${userName}</span>
+                        <span class="text-xs text-[#638866] dark:text-[#a3b8a3]">${userRole} ${userEmail ? '• ' + userEmail : ''}</span>
+                    </div>
+                    <div class="relative group">
+                        <div class="size-9 rounded-full bg-gradient-to-br from-primary to-gold flex items-center justify-center text-white font-bold text-lg cursor-pointer">
+                            ${initials || 'U'}
+                        </div>
+                        <!-- Dropdown menu -->
+                        <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1a2e1a] border border-[#e5e7eb] dark:border-[#2d3a2d] rounded-lg shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div class="px-4 py-2 border-b border-[#e5e7eb] dark:border-[#2d3a2d]">
+                                <p class="font-semibold text-sm">${userName}</p>
+                                <p class="text-xs text-[#638866] truncate">${userEmail || 'No email'}</p>
+                            </div>
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                                <span class="material-symbols-outlined text-sm">account_circle</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="setting.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                                <span class="material-symbols-outlined text-sm">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <a href="dashboard.html" class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-primary/10 transition-colors">
+                                <span class="material-symbols-outlined text-sm">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <div class="border-t border-[#e5e7eb] dark:border-[#2d3a2d] mt-2 pt-2">
+                                <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">logout</span>
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add logout functionality
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (confirm('Are you sure you want to logout?')) {
+                            localStorage.removeItem('isLoggedIn');
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('userRole');
+                            showToast('Logged out successfully', 'success');
+                            setTimeout(() => {
+                                window.location.href = 'login.html';
+                            }, 1500);
+                        }
+                    });
+                }
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userProfileDiv.contains(e.target)) {
+                        const dropdown = userProfileDiv.querySelector('.absolute');
+                        if (dropdown) {
+                            dropdown.classList.remove('opacity-100', 'visible');
+                            dropdown.classList.add('opacity-0', 'invisible');
+                        }
+                    }
+                });
+            }
+
             // Function to show toast notification
             function showToast(message, type = 'success') {
                 const toastContainer = document.getElementById('toastContainer');
@@ -365,6 +454,22 @@
                     setTimeout(() => toast.remove(), 300);
                 }, 5000);
             }
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+            
+            // Get DOM elements
+            const transactionForm = document.getElementById('transactionForm');
+            const amountInput = document.getElementById('amountInput');
+            const sourceSelect = document.getElementById('sourceSelect');
+            const categorySelect = document.getElementById('categorySelect');
+            const newMemberContainer = document.getElementById('newMemberContainer');
+            const newMemberInput = document.getElementById('newMemberInput');
+            const otherCategoryContainer = document.getElementById('otherCategoryContainer');
+            const otherCategoryInput = document.getElementById('otherCategoryInput');
+            const summaryText = document.getElementById('summaryText');
+            const txTypeRadios = document.querySelectorAll('input[name="tx_type"]');
             
             // Function to update summary preview
             function updateSummaryPreview() {
@@ -500,6 +605,7 @@
                     const transactions = JSON.parse(localStorage.getItem('mothersUnionTransactions') || '[]');
                     transactionData.id = Date.now();
                     transactionData.createdAt = new Date().toISOString();
+                    transactionData.recordedBy = JSON.parse(localStorage.getItem('currentUser') || '{}').name || 'Unknown';
                     transactions.unshift(transactionData);
                     localStorage.setItem('mothersUnionTransactions', JSON.stringify(transactions));
                     
@@ -532,6 +638,9 @@
                     
                 }, 1500);
             }
+            
+            // Initialize the page
+            updateUserProfile();
             
             // Add event listeners
             amountInput.addEventListener('input', formatAmountInput);

@@ -239,6 +239,8 @@
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== LOGIN PAGE LOADED ===');
+            
             // DOM Elements
             const loginForm = document.getElementById('loginForm');
             const loginButton = document.getElementById('loginButton');
@@ -252,14 +254,115 @@
             const passwordError = document.getElementById('passwordError');
             const rememberMe = document.getElementById('rememberMe');
 
-            // IMPORTANT: Force refresh localStorage data when page loads
-            console.log('=== LOGIN PAGE LOADED ===');
-            console.log('Current localStorage signupRequests:', JSON.parse(localStorage.getItem('signupRequests') || '[]'));
+            // ===========================================
+            // FIX 1: PROPER DATA INITIALIZATION
+            // ===========================================
+            function initializeAppData() {
+                console.log('🔄 Initializing application data...');
+                
+                // Check if data already exists
+                let signupRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
+                let needsDemoAccounts = false;
+                
+                // Define demo accounts
+                const demoAccounts = [
+                    {
+                        id: 1,
+                        fullName: 'Admin User',
+                        role: 'admin',
+                        phone: '+254 700 000 000',
+                        email: 'admin@gmail.com',
+                        password: 'admin123',
+                        status: 'approved',
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString()
+                    },
+                    {
+                        id: 2,
+                        fullName: 'Mary Kamau',
+                        role: 'treasurer',
+                        phone: '+254 711 111 111',
+                        email: 'marykamau@gmail.com',
+                        password: 'password123',
+                        status: 'approved',
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString()
+                    },
+                    {
+                        id: 3,
+                        fullName: 'Sarah Mwangi',
+                        role: 'chairlady',
+                        phone: '+254 722 222 222',
+                        email: 'sarahmwangi@yahoo.com',
+                        password: 'password123',
+                        status: 'approved',
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString()
+                    },
+                    {
+                        id: 4,
+                        fullName: 'John Omondi',
+                        role: 'secretary',
+                        phone: '+254 733 333 333',
+                        email: 'john.omondi@hotmail.com',
+                        password: 'password123',
+                        status: 'pending',
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString()
+                    }
+                ];
+                
+                // Check which demo accounts are missing
+                demoAccounts.forEach(demoAccount => {
+                    const exists = signupRequests.some(request => 
+                        request.email.toLowerCase() === demoAccount.email.toLowerCase()
+                    );
+                    
+                    if (!exists) {
+                        console.log(`➕ Adding demo account: ${demoAccount.email}`);
+                        signupRequests.push(demoAccount);
+                        needsDemoAccounts = true;
+                    }
+                });
+                
+                // Save if we added new accounts
+                if (needsDemoAccounts) {
+                    localStorage.setItem('signupRequests', JSON.stringify(signupRequests));
+                    console.log('✅ Demo accounts initialized');
+                    console.log('📋 Available accounts:');
+                    console.log('1. admin@gmail.com / admin123 (Admin - Approved)');
+                    console.log('2. marykamau@gmail.com / password123 (Treasurer - Approved)');
+                    console.log('3. sarahmwangi@yahoo.com / password123 (Chairlady - Approved)');
+                    console.log('4. john.omondi@hotmail.com / password123 (Secretary - Pending)');
+                } else {
+                    console.log('✅ Demo accounts already exist');
+                }
+                
+                // Initialize other storage if needed
+                if (!localStorage.getItem('loginHistory')) {
+                    localStorage.setItem('loginHistory', JSON.stringify([]));
+                }
+                
+                return signupRequests;
+            }
             
-            // Load saved credentials if "Remember me" was checked
+            // Initialize data on page load
+            const allUsers = initializeAppData();
+            console.log('📊 Total users in database:', allUsers.length);
+            console.log('👥 Users:', allUsers.map(u => ({ email: u.email, status: u.status, role: u.role })));
+            
+            // ===========================================
+            // FIX 2: LOAD SAVED CREDENTIALS PROPERLY
+            // ===========================================
             const savedUsername = localStorage.getItem('savedUsername');
             const savedPassword = localStorage.getItem('savedPassword');
             const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+            
+            console.log('💾 Saved credentials check:', {
+                savedUsername: savedUsername,
+                hasPassword: !!savedPassword,
+                savedRememberMe: savedRememberMe
+            });
             
             if (savedRememberMe && savedUsername) {
                 document.getElementById('username').value = savedUsername;
@@ -295,7 +398,7 @@
                 errorMessage.classList.add('hidden');
             }
 
-            // Validate email format (supports all email providers)
+            // Validate email format
             function validateEmail(email) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);
@@ -337,19 +440,26 @@
                 return isValid;
             }
 
-            // Check if user exists and is approved (case-insensitive) - UPDATED VERSION
+            // ===========================================
+            // FIX 3: IMPROVED CREDENTIAL CHECKING
+            // ===========================================
             function checkUserCredentials(email, password) {
                 try {
                     // ALWAYS read fresh data from localStorage
                     const signupRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
                     
                     console.log('🔍 LOGIN DEBUG: Checking credentials for:', email);
-                    console.log('🔍 LOGIN DEBUG: Total users in database:', signupRequests.length);
-                    console.log('🔍 LOGIN DEBUG: All users:', signupRequests.map(u => ({
-                        email: u.email,
-                        status: u.status,
-                        role: u.role
-                    })));
+                    console.log('📊 LOGIN DEBUG: Total users in database:', signupRequests.length);
+                    
+                    // Debug: Show all users with their passwords (for debugging only)
+                    signupRequests.forEach((user, index) => {
+                        console.log(`User ${index}:`, {
+                            email: user.email,
+                            storedPassword: user.password,
+                            status: user.status,
+                            matchesEmail: user.email.toLowerCase() === email.toLowerCase()
+                        });
+                    });
                     
                     // Find user with matching email (case-insensitive)
                     const user = signupRequests.find(request => 
@@ -367,14 +477,24 @@
                     
                     console.log('✅ LOGIN DEBUG: User found:', {
                         email: user.email,
+                        storedPassword: user.password,
+                        enteredPassword: password,
                         status: user.status,
                         role: user.role,
                         fullName: user.fullName
                     });
                     
-                    // Check password (in real app, compare hashed passwords)
+                    // ===========================================
+                    // FIX 4: STRICT PASSWORD COMPARISON
+                    // ===========================================
                     if (user.password !== password) {
-                        console.log('❌ LOGIN DEBUG: Password mismatch');
+                        console.log('❌ LOGIN DEBUG: Password mismatch!');
+                        console.log('Expected:', user.password);
+                        console.log('Got:', password);
+                        console.log('Type of expected:', typeof user.password);
+                        console.log('Type of entered:', typeof password);
+                        console.log('Exact comparison:', user.password === password);
+                        
                         return { 
                             success: false, 
                             message: 'Incorrect password. Please try again.',
@@ -434,10 +554,10 @@
             function redirectToDashboard(role) {
                 // Map roles to dashboard URLs
                 const roleDashboards = {
-                    'treasurer': 'dashboard-treasurer.html',
-                    'chairlady': 'dashboard-chairlady.html',
-                    'secretary': 'dashboard-secretary.html',
-                    'admin': 'admin-dashboard.html'
+                    'treasurer': 'dashboard.html',
+                    'chairlady': 'dashboard.html',
+                    'secretary': 'dashboard.html',
+                    'admin': 'adminapprove.html'
                 };
                 
                 // Default dashboard if role not found
@@ -452,7 +572,9 @@
                 }, 1000);
             }
 
-            // Handle form submission
+            // ===========================================
+            // FIX 5: IMPROVED FORM SUBMISSION
+            // ===========================================
             loginForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                 
@@ -469,7 +591,7 @@
                 loginSpinner.classList.remove('hidden');
                 loginButton.disabled = true;
                 
-                // Simulate API delay
+                // Add a small delay to show loading state
                 setTimeout(() => {
                     // Check credentials - THIS READS FRESH DATA EVERY TIME
                     const result = checkUserCredentials(email, password);
@@ -497,6 +619,8 @@
                         
                         // Track login activity
                         trackLoginActivity(email, result.user.role);
+                        
+                        console.log('🎉 Login successful! Redirecting to:', result.user.role);
                         
                         // Redirect to dashboard based on role
                         setTimeout(() => {
@@ -552,7 +676,7 @@
                         loginSpinner.classList.add('hidden');
                         loginButton.disabled = false;
                     }
-                }, 1500); // Simulate network delay
+                }, 1000); // Simulate network delay
             });
 
             // Track login activity for security
@@ -583,89 +707,6 @@
                 localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
             }
 
-            // Setup demo accounts for testing (with regular email addresses)
-            function setupDemoAccounts() {
-                // Check if demo accounts already exist
-                const existingRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
-                
-                // Add demo accounts with regular email addresses
-                const demoAccounts = [
-                    {
-                        id: Date.now() + 1,
-                        fullName: 'Admin User',
-                        role: 'admin',
-                        phone: '+254 700 000 000',
-                        email: 'admin@gmail.com',
-                        password: 'admin123',
-                        status: 'approved',
-                        timestamp: new Date().toISOString(),
-                        date: new Date().toLocaleDateString()
-                    },
-                    {
-                        id: Date.now() + 2,
-                        fullName: 'Mary Kamau',
-                        role: 'treasurer',
-                        phone: '+254 711 111 111',
-                        email: 'marykamau@gmail.com',
-                        password: 'password123',
-                        status: 'approved',
-                        timestamp: new Date().toISOString(),
-                        date: new Date().toLocaleDateString()
-                    },
-                    {
-                        id: Date.now() + 3,
-                        fullName: 'Sarah Mwangi',
-                        role: 'chairlady',
-                        phone: '+254 722 222 222',
-                        email: 'sarahmwangi@yahoo.com',
-                        password: 'password123',
-                        status: 'approved',
-                        timestamp: new Date().toISOString(),
-                        date: new Date().toLocaleDateString()
-                    },
-                    {
-                        id: Date.now() + 4,
-                        fullName: 'John Omondi',
-                        role: 'secretary',
-                        phone: '+254 733 333 333',
-                        email: 'john.omondi@hotmail.com',
-                        password: 'password123',
-                        status: 'pending',
-                        timestamp: new Date().toISOString(),
-                        date: new Date().toLocaleDateString()
-                    }
-                ];
-                
-                // Only add demo accounts if they don't exist
-                let needsUpdate = false;
-                demoAccounts.forEach(demoAccount => {
-                    const exists = existingRequests.some(request => 
-                        request.email.toLowerCase() === demoAccount.email.toLowerCase()
-                    );
-                    if (!exists) {
-                        existingRequests.push(demoAccount);
-                        needsUpdate = true;
-                    }
-                });
-                
-                if (needsUpdate) {
-                    localStorage.setItem('signupRequests', JSON.stringify(existingRequests));
-                    console.log('🎯 Demo accounts added with regular email addresses:');
-                    console.log('1. admin@gmail.com / admin123 (Admin)');
-                    console.log('2. marykamau@gmail.com / password123 (Treasurer)');
-                    console.log('3. sarahmwangi@yahoo.com / password123 (Chairlady)');
-                    console.log('4. john.omondi@hotmail.com / password123 (Secretary - Pending)');
-                }
-            }
-
-            // Setup demo accounts on page load
-            setupDemoAccounts();
-
-            // Initialize login history storage
-            if (!localStorage.getItem('loginHistory')) {
-                localStorage.setItem('loginHistory', JSON.stringify([]));
-            }
-
             // Real-time validation
             document.getElementById('username').addEventListener('input', hideError);
             document.getElementById('password').addEventListener('input', hideError);
@@ -681,35 +722,85 @@
                 passwordError.classList.add('hidden');
             });
 
+            // ===========================================
+            // FIX 6: TEST BUTTON FOR DEBUGGING
+            // ===========================================
+            const testButton = document.createElement('button');
+            testButton.innerHTML = `
+                <span class="material-symbols-outlined mr-1" style="font-size: 16px;">bug_report</span>
+                Test Login
+            `;
+            testButton.className = 'fixed bottom-20 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors z-50 flex items-center';
+            testButton.onclick = function() {
+                console.log('🧪 TESTING LOGIN FUNCTIONALITY');
+                
+                // Test with admin account
+                document.getElementById('username').value = 'admin@gmail.com';
+                document.getElementById('password').value = 'admin123';
+                rememberMe.checked = true;
+                
+                // Simulate form submission
+                setTimeout(() => {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }, 500);
+            };
+            document.body.appendChild(testButton);
+
             // Add refresh button to manually sync data
             const refreshButton = document.createElement('button');
             refreshButton.innerHTML = `
                 <span class="material-symbols-outlined mr-1" style="font-size: 16px;">refresh</span>
-                Refresh Data
+                Check Data
             `;
             refreshButton.className = 'fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-[#1e3d1a] transition-colors z-50 flex items-center';
             refreshButton.onclick = function() {
-                console.log('🔄 Manually refreshing localStorage data...');
+                console.log('🔄 Checking localStorage data...');
                 const signupRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
-                console.log('📊 Current data:', signupRequests.map(u => ({
-                    email: u.email,
-                    status: u.status,
-                    role: u.role
-                })));
-                alert('Data refreshed! Check console (F12) for details.');
+                
+                let message = `📊 Current Database Status:\n\n`;
+                message += `Total Users: ${signupRequests.length}\n\n`;
+                
+                signupRequests.forEach((user, index) => {
+                    message += `${index + 1}. ${user.email}\n`;
+                    message += `   Password: ${user.password}\n`;
+                    message += `   Status: ${user.status}\n`;
+                    message += `   Role: ${user.role}\n\n`;
+                });
+                
+                alert(message);
+                console.log('📋 All users:', signupRequests);
             };
             document.body.appendChild(refreshButton);
             
-            // Add storage event listener for Live Server tabs
-            window.addEventListener('storage', function(event) {
-                console.log('📦 Storage event detected:', event.key);
-                if (event.key === 'signupRequests') {
-                    console.log('🔄 signupRequests updated in another tab!');
-                    console.log('New data:', JSON.parse(event.newValue || '[]'));
-                    alert('Admin has updated user approvals. You can now try logging in again.');
+            // Add reset button for testing
+            const resetButton = document.createElement('button');
+            resetButton.innerHTML = `
+                <span class="material-symbols-outlined mr-1" style="font-size: 16px;">delete</span>
+                Reset Data
+            `;
+            resetButton.className = 'fixed bottom-36 right-4 bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition-colors z-50 flex items-center';
+            resetButton.onclick = function() {
+                if (confirm('Are you sure you want to reset ALL data? This will clear everything and start fresh.')) {
+                    localStorage.clear();
+                    alert('All data cleared! Page will reload.');
+                    location.reload();
                 }
-            });
+            };
+            document.body.appendChild(resetButton);
+            
+            // ===========================================
+            // FIX 7: AUTO-TEST ON PAGE LOAD
+            // ===========================================
+            // Auto-populate with demo account for testing
+            setTimeout(() => {
+                document.getElementById('username').value = 'admin@gmail.com';
+                document.getElementById('password').value = 'admin123';
+                console.log('🔑 Auto-filled demo credentials for testing');
+            }, 1000);
+            
+            console.log('✅ Login page initialized successfully');
         });
+    </script>
     </script>
 </body>
 </html>
