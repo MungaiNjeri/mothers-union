@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Admin Panel - Help & Approvals | ACK Christ the King</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "secondary": "#3b82f6",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Loading animations */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <!-- Check authentication -->
+    <script>
+        // Check if user is logged in and is admin
+       document.addEventListener('DOMContentLoaded', function() {
+    // DEV OVERRIDE — REMOVE AFTER FIXING LOGIN
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userRole', 'admin');
+
+    const devAdmin = {
+        name: 'Mary Njeri',
+        email: 'njeri255mungai@gmail.com',
+        role: 'admin'
+    };
+
+    localStorage.setItem('currentUser', JSON.stringify(devAdmin));
+});
+
+            
+            // Load admin data
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (currentUser.name) {
+                // Update admin name in header if available
+                const adminNameElement = document.querySelector('.text-right p:first-child');
+                if (adminNameElement) {
+                    adminNameElement.textContent = currentUser.name;
+                }
+            }
+        
+    </script>
+
+    <!-- Top Navigation -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo and Title -->
+            <div class="flex items-center gap-3">
+                <div class="size-10 text-primary">
+                    <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">ACK Admin Panel</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Help Desk & User Approvals</p>
+                </div>
+            </div>
+
+            <!-- User Menu -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white">Developer Admin</p>
+                        <p class="text-xs text-slate-500">Software Engineer</p>
+                    </div>
+                    <div class="size-10 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white font-bold">
+                        SE
+                    </div>
+                </div>
+                <button id="logoutButton" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm font-medium">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2" id="adminWelcome">Welcome back, Admin!</h2>
+            <p class="text-slate-600 dark:text-slate-400">Here's what needs your attention today.</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Pending Signups -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Pending Signups</p>
+                        <p class="text-3xl font-bold text-slate-900 dark:text-white" id="pendingCount">0</p>
+                    </div>
+                    <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">person_add</span>
+                    </div>
+                </div>
+                <a href="#signup-section" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1">
+                    Review requests <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+
+            <!-- Help Requests -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Help Requests</p>
+                        <p class="text-3xl font-bold text-slate-900 dark:text-white" id="helpCount">0</p>
+                    </div>
+                    <div class="size-12 rounded-lg bg-secondary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary">help</span>
+                    </div>
+                </div>
+                <a href="#help-section" class="text-sm font-medium text-secondary hover:text-secondary/80 flex items-center gap-1">
+                    View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+
+            <!-- System Status -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">System Status</p>
+                        <p class="text-3xl font-bold text-green-600 dark:text-green-500" id="systemStatus">All Good</p>
+                    </div>
+                    <div class="size-12 rounded-lg bg-green-500/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-green-600 dark:text-green-500">check_circle</span>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400" id="systemMessage">No critical issues detected</p>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Signup Approvals Section -->
+            <section id="signup-section" class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Signup Approvals</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Approve or deny new member requests</p>
+                        </div>
+                        <span id="pendingBadge" class="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">0 Pending</span>
+                    </div>
+                </div>
+
+                <!-- Signup Requests List -->
+                <div id="signupRequestsList" class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <!-- Requests will be loaded dynamically -->
+                    <div class="p-6 text-center text-slate-500 dark:text-slate-400">
+                        <p>Loading signup requests...</p>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-slate-200 dark:border-slate-800">
+                    <button id="refreshSignups" class="text-primary hover:text-primary/80 font-medium text-sm flex items-center justify-center gap-2 w-full">
+                        <span>Refresh Requests</span>
+                        <span class="material-symbols-outlined text-sm">refresh</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Help Requests Section -->
+            <section id="help-section" class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Help Requests</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Answer user questions and issues</p>
+                        </div>
+                        <span id="helpBadge" class="text-xs font-semibold bg-secondary/10 text-secondary px-3 py-1 rounded-full">0 Unanswered</span>
+                    </div>
+                </div>
+
+                <!-- Help Requests List -->
+                <div id="helpRequestsList" class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <!-- Requests will be loaded dynamically -->
+                    <div class="p-6 text-center text-slate-500 dark:text-slate-400">
+                        <p>Loading help requests...</p>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-slate-200 dark:border-slate-800">
+                    <button id="refreshHelp" class="text-secondary hover:text-secondary/80 font-medium text-sm flex items-center justify-center gap-2 w-full">
+                        <span>Refresh Help Requests</span>
+                        <span class="material-symbols-outlined text-sm">refresh</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Recent Activity</h3>
+                <button id="clearActivity" class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+                    Clear History
+                </button>
+            </div>
+            <div id="activityList" class="space-y-4">
+                <!-- Activity will be loaded dynamically -->
+                <div class="p-3 text-center text-slate-500 dark:text-slate-400">
+                    <p>No recent activity</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 py-6 border-t border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+                ACK Christ the King Admin Panel • Version 2.1.0
+            </p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                For system emergencies, contact: admin@ackctk.org • Last updated: <span id="lastUpdated">Today</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const logoutButton = document.getElementById('logoutButton');
+            const adminWelcome = document.getElementById('adminWelcome');
+            const pendingCount = document.getElementById('pendingCount');
+            const helpCount = document.getElementById('helpCount');
+            const systemStatus = document.getElementById('systemStatus');
+            const systemMessage = document.getElementById('systemMessage');
+            const pendingBadge = document.getElementById('pendingBadge');
+            const helpBadge = document.getElementById('helpBadge');
+            const signupRequestsList = document.getElementById('signupRequestsList');
+            const helpRequestsList = document.getElementById('helpRequestsList');
+            const activityList = document.getElementById('activityList');
+            const refreshSignups = document.getElementById('refreshSignups');
+            const refreshHelp = document.getElementById('refreshHelp');
+            const clearActivity = document.getElementById('clearActivity');
+            const lastUpdated = document.getElementById('lastUpdated');
+
+            // Current admin user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Initialize storage for admin data
+            if (!localStorage.getItem('adminActivity')) {
+                localStorage.setItem('adminActivity', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('helpRequests')) {
+                localStorage.setItem('helpRequests', JSON.stringify([]));
+            }
+
+            // Update welcome message with admin name
+            if (currentUser.name) {
+                adminWelcome.textContent = `Welcome back, ${currentUser.name}!`;
+            }
+
+            // Update last updated time
+            lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Get all signup requests from localStorage - FIXED VERSION
+            function getSignupRequests() {
+                try {
+                    const requests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
+                    console.log('DEBUG: Retrieved', requests.length, 'signup requests from localStorage');
+                    console.log('DEBUG: Request statuses:', requests.map(r => ({email: r.email, status: r.status})));
+                    return requests;
+                } catch (error) {
+                    console.error('Error getting signup requests:', error);
+                    return [];
+                }
+            }
+
+            // Get pending signup requests
+            function getPendingSignups() {
+                const allRequests = getSignupRequests();
+                const pending = allRequests.filter(request => request.status === 'pending');
+                console.log('DEBUG: Found', pending.length, 'pending signups');
+                return pending;
+            }
+
+            // Get help requests
+            function getHelpRequests() {
+                try {
+                    return JSON.parse(localStorage.getItem('helpRequests') || '[]');
+                } catch (error) {
+                    console.error('Error getting help requests:', error);
+                    return [];
+                }
+            }
+
+            // Get admin activity
+            function getAdminActivity() {
+                try {
+                    return JSON.parse(localStorage.getItem('adminActivity') || '[]');
+                } catch (error) {
+                    console.error('Error getting admin activity:', error);
+                    return [];
+                }
+            }
+
+            // Add activity log
+            function addActivity(action, details) {
+                const activities = getAdminActivity();
+                activities.unshift({
+                    action: action,
+                    details: details,
+                    timestamp: new Date().toISOString(),
+                    admin: currentUser.name || 'Admin'
+                });
+                
+                // Keep only last 20 activities
+                if (activities.length > 20) {
+                    activities.length = 20;
+                }
+                
+                localStorage.setItem('adminActivity', JSON.stringify(activities));
+                loadRecentActivity();
+            }
+
+            // UPDATE: Enhanced updateSignupStatus function with better logging
+            function updateSignupStatus(requestId, newStatus, reason = '') {
+                console.log(`DEBUG: Updating user ${requestId} to status: ${newStatus}`);
+                
+                const allRequests = getSignupRequests();
+                console.log('DEBUG: Before update - All requests:', allRequests.map(r => ({id: r.id, email: r.email, status: r.status})));
+                
+                const requestIndex = allRequests.findIndex(req => req.id == requestId);
+                
+                if (requestIndex !== -1) {
+                    const oldStatus = allRequests[requestIndex].status;
+                    allRequests[requestIndex].status = newStatus;
+                    allRequests[requestIndex].processedAt = new Date().toISOString();
+                    allRequests[requestIndex].processedBy = currentUser.name || 'Admin';
+                    
+                    if (reason) {
+                        allRequests[requestIndex].reason = reason;
+                    }
+                    
+                    // CRITICAL: Save back to localStorage
+                    localStorage.setItem('signupRequests', JSON.stringify(allRequests));
+                    
+                    // Verify the update was saved
+                    const verifyRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
+                    const updatedUser = verifyRequests.find(req => req.id == requestId);
+                    console.log('DEBUG: After update - User status:', updatedUser ? {email: updatedUser.email, status: updatedUser.status} : 'Not found');
+                    console.log('DEBUG: After update - All requests:', verifyRequests.map(r => ({id: r.id, email: r.email, status: r.status})));
+                    
+                    // Log activity
+                    const userName = allRequests[requestIndex].fullName;
+                    const userEmail = allRequests[requestIndex].email;
+                    
+                    if (newStatus === 'approved') {
+                        addActivity('Approved signup', `${userName} (${userEmail})`);
+                        alert(`✅ Approved ${userName}!\nThey can now login with their email and password.`);
+                    } else if (newStatus === 'rejected') {
+                        addActivity('Rejected signup', `${userName} - Reason: ${reason || 'No reason provided'}`);
+                        alert(`❌ Rejected ${userName}.\nReason: ${reason || 'No reason provided'}`);
+                    }
+                    
+                    return true;
+                } else {
+                    console.error('DEBUG: User not found with ID:', requestId);
+                    return false;
+                }
+            }
+
+            // Update help request status
+            function updateHelpStatus(requestId, response) {
+                const helpRequests = getHelpRequests();
+                const requestIndex = helpRequests.findIndex(req => req.id == requestId);
+                
+                if (requestIndex !== -1) {
+                    helpRequests[requestIndex].status = 'responded';
+                    helpRequests[requestIndex].response = response;
+                    helpRequests[requestIndex].respondedAt = new Date().toISOString();
+                    helpRequests[requestIndex].respondedBy = currentUser.name || 'Admin';
+                    
+                    localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
+                    
+                    // Log activity
+                    const issue = helpRequests[requestIndex].issue;
+                    addActivity('Responded to help request', `Issue: ${issue.substring(0, 50)}...`);
+                    
+                    return true;
+                }
+                return false;
+            }
+
+            // Load and display pending signups - IMPROVED VERSION
+            function loadPendingSignups() {
+                const pendingSignups = getPendingSignups();
+                const signupRequestsList = document.getElementById('signupRequestsList');
+                
+                // Update counters
+                pendingCount.textContent = pendingSignups.length;
+                pendingBadge.textContent = `${pendingSignups.length} Pending`;
+                
+                if (pendingSignups.length === 0) {
+                    signupRequestsList.innerHTML = `
+                        <div class="p-6 text-center">
+                            <div class="size-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-green-600 dark:text-green-400">check_circle</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 font-medium">All caught up!</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">No pending signup requests.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                pendingSignups.forEach(request => {
+                    const initials = request.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    const timeAgo = getTimeAgo(new Date(request.timestamp));
+                    
+                    html += `
+                        <div class="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors" data-id="${request.id}" data-email="${request.email}">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold">
+                                        ${initials.substring(0, 2)}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-slate-900 dark:text-white">${request.fullName}</h4>
+                                        <p class="text-sm text-slate-500">${request.email}</p>
+                                        <p class="text-xs text-slate-400 mt-1">${request.phone}</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 px-2 py-1 rounded">
+                                    ${request.role.charAt(0).toUpperCase() + request.role.slice(1)}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-sm align-middle mr-1">schedule</span>
+                                    ${timeAgo}
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="approve-btn px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1">
+                                        <span>Approve</span>
+                                    </button>
+                                    <button class="deny-btn px-4 py-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                        Deny
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                signupRequestsList.innerHTML = html;
+                
+                // Add event listeners to new buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.addEventListener('click', handleApprove);
+                });
+                
+                document.querySelectorAll('.deny-btn').forEach(button => {
+                    button.addEventListener('click', handleDeny);
+                });
+            }
+
+            // Load and display help requests
+            function loadHelpRequests() {
+                const helpRequests = getHelpRequests().filter(req => req.status === 'pending');
+                const helpRequestsList = document.getElementById('helpRequestsList');
+                
+                // Update counters
+                helpCount.textContent = helpRequests.length;
+                helpBadge.textContent = `${helpRequests.length} Unanswered`;
+                
+                if (helpRequests.length === 0) {
+                    helpRequestsList.innerHTML = `
+                        <div class="p-6 text-center">
+                            <div class="size-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">check_circle</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 font-medium">No help requests</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">All help requests have been responded to.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                helpRequests.forEach(request => {
+                    const timeAgo = getTimeAgo(new Date(request.timestamp));
+                    
+                    html += `
+                        <div class="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors" data-id="${request.id}">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">person</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-slate-900 dark:text-white">${request.issue}</h4>
+                                        <p class="text-sm text-slate-500">From: ${request.name} • ${request.email}</p>
+                                        ${request.userId ? `<p class="text-xs text-slate-400 mt-1">Member ID: ${request.userId}</p>` : ''}
+                                    </div>
+                                </div>
+                                ${request.priority === 'high' ? `
+                                    <span class="text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 px-2 py-1 rounded">
+                                        Urgent
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">"${request.message}"</p>
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-sm align-middle mr-1">schedule</span>
+                                    ${timeAgo}
+                                </div>
+                                <button class="respond-btn px-4 py-2 bg-secondary text-white text-sm font-medium rounded-lg hover:bg-secondary/90 transition-colors flex items-center gap-1">
+                                    <span>Respond</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                helpRequestsList.innerHTML = html;
+                
+                // Add event listeners to respond buttons
+                document.querySelectorAll('.respond-btn').forEach(button => {
+                    button.addEventListener('click', handleRespond);
+                });
+            }
+
+            // Load recent activity
+            function loadRecentActivity() {
+                const activities = getAdminActivity();
+                const activityList = document.getElementById('activityList');
+                
+                if (activities.length === 0) {
+                    activityList.innerHTML = `
+                        <div class="p-3 text-center text-slate-500 dark:text-slate-400">
+                            <p>No recent activity</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                activities.slice(0, 5).forEach(activity => {
+                    const timeAgo = getTimeAgo(new Date(activity.timestamp));
+                    const icon = getActivityIcon(activity.action);
+                    const color = getActivityColor(activity.action);
+                    
+                    html += `
+                        <div class="flex items-center gap-4 p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-lg">
+                            <div class="size-10 rounded-full ${color.bg} flex items-center justify-center">
+                                <span class="material-symbols-outlined ${color.text}">${icon}</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-slate-900 dark:text-white">${activity.action}</p>
+                                <p class="text-sm text-slate-500">${activity.details}</p>
+                                <p class="text-xs text-slate-400 mt-1">${timeAgo} • By: ${activity.admin}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                activityList.innerHTML = html;
+            }
+
+            // Handle approve button click - IMPROVED
+            function handleApprove(event) {
+                const requestItem = event.target.closest('[data-id]');
+                const requestId = requestItem.getAttribute('data-id');
+                const userName = requestItem.querySelector('h4').textContent;
+                const userEmail = requestItem.getAttribute('data-email');
+                
+                if (confirm(`Approve signup for ${userName} (${userEmail})?\n\nThey will be able to login immediately.`)) {
+                    // Update status
+                    if (updateSignupStatus(requestId, 'approved')) {
+                        // Show success animation
+                        requestItem.style.opacity = '0.5';
+                        requestItem.style.pointerEvents = 'none';
+                        
+                        // Remove after delay
+                        setTimeout(() => {
+                            loadPendingSignups();
+                            checkSystemStatus();
+                        }, 500);
+                    } else {
+                        alert('Error approving user. Please try again.');
+                    }
+                }
+            }
+
+            // Handle deny button click
+            function handleDeny(event) {
+                const requestItem = event.target.closest('[data-id]');
+                const requestId = requestItem.getAttribute('data-id');
+                const userName = requestItem.querySelector('h4').textContent;
+                const userEmail = requestItem.getAttribute('data-email');
+                
+                const reason = prompt(`Enter reason for denying ${userName}'s signup request:\n\nEmail: ${userEmail}`);
+                if (reason !== null) {
+                    if (updateSignupStatus(requestId, 'rejected', reason || 'No reason provided')) {
+                        // Show success animation
+                        requestItem.style.opacity = '0.5';
+                        requestItem.style.pointerEvents = 'none';
+                        
+                        // Remove after delay
+                        setTimeout(() => {
+                            loadPendingSignups();
+                            checkSystemStatus();
+                        }, 500);
+                    } else {
+                        alert('Error rejecting user. Please try again.');
+                    }
+                }
+            }
+
+            // Handle respond button click
+            function handleRespond(event) {
+                const requestItem = event.target.closest('[data-id]');
+                const requestId = requestItem.getAttribute('data-id');
+                const issue = requestItem.querySelector('h4').textContent;
+                
+                const response = prompt(`Enter your response to: "${issue}"`);
+                if (response && response.trim()) {
+                    if (updateHelpStatus(requestId, response.trim())) {
+                        // Show success animation
+                        requestItem.style.opacity = '0.5';
+                        requestItem.style.pointerEvents = 'none';
+                        
+                        // Remove after delay
+                        setTimeout(() => {
+                            loadHelpRequests();
+                            checkSystemStatus();
+                        }, 300);
+                    }
+                }
+            }
+
+            // Check system status
+            function checkSystemStatus() {
+                const pendingSignups = getPendingSignups().length;
+                const pendingHelp = getHelpRequests().filter(req => req.status === 'pending').length;
+                
+                if (pendingSignups > 10) {
+                    systemStatus.textContent = 'Attention Needed';
+                    systemStatus.className = 'text-3xl font-bold text-amber-600 dark:text-amber-500';
+                    systemMessage.textContent = `${pendingSignups} pending signups need review`;
+                } else if (pendingHelp > 5) {
+                    systemStatus.textContent = 'Help Queue';
+                    systemStatus.className = 'text-3xl font-bold text-blue-600 dark:text-blue-500';
+                    systemMessage.textContent = `${pendingHelp} help requests waiting`;
+                } else {
+                    systemStatus.textContent = 'All Good';
+                    systemStatus.className = 'text-3xl font-bold text-green-600 dark:text-green-500';
+                    systemMessage.textContent = 'No critical issues detected';
+                }
+            }
+
+            // Helper function: Get time ago
+            function getTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                
+                if (seconds < 60) return 'Just now';
+                if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+                if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+                if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+                return date.toLocaleDateString();
+            }
+
+            // Helper function: Get activity icon
+            function getActivityIcon(action) {
+                if (action.includes('Approved')) return 'check';
+                if (action.includes('Rejected')) return 'block';
+                if (action.includes('Responded')) return 'chat';
+                return 'history';
+            }
+
+            // Helper function: Get activity color
+            function getActivityColor(action) {
+                if (action.includes('Approved')) return { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400' };
+                if (action.includes('Rejected')) return { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400' };
+                if (action.includes('Responded')) return { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400' };
+                return { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-600 dark:text-slate-400' };
+            }
+
+            // Logout function
+            function handleLogout() {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('userRole');
+                    window.location.href = 'login.html';
+                }
+            }
+
+            // Clear activity history
+            function handleClearActivity() {
+                if (confirm('Clear all activity history?')) {
+                    localStorage.setItem('adminActivity', JSON.stringify([]));
+                    loadRecentActivity();
+                }
+            }
+
+            // Initialize dashboard
+            function initializeDashboard() {
+                console.log('DEBUG: Initializing admin dashboard...');
+                loadPendingSignups();
+                loadHelpRequests();
+                loadRecentActivity();
+                checkSystemStatus();
+                
+                // Add some sample help requests if none exist
+                const helpRequests = getHelpRequests();
+                if (helpRequests.length === 0) {
+                    const sampleRequests = [
+                        {
+                            id: Date.now() + 1,
+                            name: 'James Ngugi',
+                            email: 'james@gmail.com',
+                            issue: 'Can\'t reset password',
+                            message: 'I\'ve tried resetting my password 3 times but never receive the reset email. Can you help?',
+                            status: 'pending',
+                            timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+                            priority: 'high'
+                        },
+                        {
+                            id: Date.now() + 2,
+                            name: 'Sarah Mwangi',
+                            email: 'sarah@yahoo.com',
+                            issue: 'Report download issue',
+                            message: 'Monthly finance report download fails with "server error". Can you check the export feature?',
+                            status: 'pending',
+                            timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                            priority: 'normal'
+                        }
+                    ];
+                    
+                    localStorage.setItem('helpRequests', JSON.stringify(sampleRequests));
+                    loadHelpRequests();
+                    checkSystemStatus();
+                }
+                
+                // Show localStorage debug info
+                console.log('DEBUG: Current localStorage contents:');
+                console.log('- signupRequests:', JSON.parse(localStorage.getItem('signupRequests') || '[]').length, 'entries');
+                console.log('- helpRequests:', JSON.parse(localStorage.getItem('helpRequests') || '[]').length, 'entries');
+                console.log('- adminActivity:', JSON.parse(localStorage.getItem('adminActivity') || '[]').length, 'entries');
+            }
+
+            // Event Listeners
+            logoutButton.addEventListener('click', handleLogout);
+            refreshSignups.addEventListener('click', function() {
+                console.log('DEBUG: Manually refreshing signup requests...');
+                loadPendingSignups();
+            });
+            refreshHelp.addEventListener('click', loadHelpRequests);
+            clearActivity.addEventListener('click', handleClearActivity);
+
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadPendingSignups();
+                loadHelpRequests();
+            }, 30000);
+
+            // Initialize
+            initializeDashboard();
+            
+            // Add initial activity
+            if (getAdminActivity().length === 0) {
+                addActivity('Admin logged in', 'Dashboard accessed');
+            }
+            
+            // Add debug button
+            const debugButton = document.createElement('button');
+            debugButton.textContent = 'Debug Info';
+            debugButton.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors z-50';
+            debugButton.onclick = function() {
+                const signupRequests = JSON.parse(localStorage.getItem('signupRequests') || '[]');
+                const pendingCount = signupRequests.filter(r => r.status === 'pending').length;
+                const approvedCount = signupRequests.filter(r => r.status === 'approved').length;
+                const rejectedCount = signupRequests.filter(r => r.status === 'rejected').length;
+                
+                alert(`LocalStorage Debug Info:\n\n` +
+                      `Total Users: ${signupRequests.length}\n` +
+                      `Pending: ${pendingCount}\n` +
+                      `Approved: ${approvedCount}\n` +
+                      `Rejected: ${rejectedCount}\n\n` +
+                      `Check browser console (F12) for more details.`);
+                      
+                console.log('DEBUG: Full signupRequests:', signupRequests);
+            };
+            document.body.appendChild(debugButton);
+        });
+    </script>
+</body>
+</html>
