@@ -124,73 +124,297 @@
                     </div>
 
                     <!-- Login Form -->
-                    <form id="loginForm" class="space-y-5">
-                        <!-- Email Field -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="username" class="text-[#0d1b10] dark:text-white text-sm font-bold ml-1">Email Address</label>
-                            <div class="relative group">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" aria-hidden="true">person</span>
-                                <input 
-                                    id="username"
-                                    name="username"
-                                    type="email" 
-                                    placeholder="example@gmail.com" 
-                                    required
-                                    class="w-full rounded-xl text-[#0d1b10] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-[#cfe7d3] dark:border-white/10 bg-gray-50 dark:bg-white/5 h-14 pl-12 placeholder:text-gray-400 text-base"
-                                >
-                            </div>
-                            <div id="usernameError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
+            
 
-                        <!-- Password Field -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="password" class="text-[#0d1b10] dark:text-white text-sm font-bold ml-1">Password</label>
-                            <div class="relative group">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" aria-hidden="true">lock</span>
-                                <input 
-                                    id="password"
-                                    name="password"
-                                    type="password" 
-                                    placeholder="Enter password" 
-                                    required
-                                    class="w-full rounded-xl text-[#0d1b10] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-[#cfe7d3] dark:border-white/10 bg-gray-50 dark:bg-white/5 h-14 pl-12 pr-12 placeholder:text-gray-400 text-base"
-                                >
-                                <button 
-                                    type="button" 
-                                    id="togglePassword"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
-                                    aria-label="Toggle password visibility"
-                                >
-                                    <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
-                                </button>
-                            </div>
-                            <div id="passwordError" class="text-red-500 text-sm mt-1 hidden"></div>
-                        </div>
+<!-- templates/auth/login.html -->
+{% extends 'base.html' %}
+{% load static %}
 
-                        <!-- Remember Me -->
-                        <div class="flex items-center">
-                            <input id="rememberMe" type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                            <label for="rememberMe" class="ml-2 text-sm text-gray-600 dark:text-gray-400">Remember me</label>
-                        </div>
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 dark:from-slate-900 dark:to-slate-800 p-4">
+    <div class="w-full max-w-md">
+        <!-- Display Django messages -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-                        <!-- Submit Button -->
-                        <div class="pt-2">
-                            <button 
-                                id="loginButton"
-                                type="submit"
-                                class="w-full rounded-xl h-14 px-4 bg-primary text-white text-lg font-bold hover:bg-[#1e3d1a] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                            >
-                                <span id="loginText">Login</span>
-                                <div id="loginSpinner" class="hidden loading-spinner"></div>
-                            </button>
-                        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
+            <!-- Logo/Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-[#0d1b10] dark:text-white mb-2">
+                    Welcome Back
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Sign in to your account
+                </p>
+            </div>
 
-                        <!-- Forgot Password -->
-                        <div class="text-center pt-2">
-                            <a href="forgot.html" class="text-sm text-church-gold hover:text-primary font-bold transition-colors underline decoration-2 underline-offset-4">Forgot your password?</a>
-                        </div>
-                    </form>
+            <!-- Login Form -->
+            <form id="loginForm" method="POST" action="{% url 'login' %}" class="space-y-5">
+                {% csrf_token %}
+                
+                <!-- Email Field -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="username" class="text-[#0d1b10] dark:text-white text-sm font-bold ml-1">Email Address</label>
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" aria-hidden="true">person</span>
+                        <input 
+                            id="username"
+                            name="username"
+                            type="email" 
+                            placeholder="example@gmail.com" 
+                            required
+                            class="w-full rounded-xl text-[#0d1b10] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-[#cfe7d3] dark:border-white/10 bg-gray-50 dark:bg-white/5 h-14 pl-12 placeholder:text-gray-400 text-base"
+                            value="{{ request.POST.username|default:'' }}"
+                        >
+                    </div>
+                    <div id="usernameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                </div>
 
+                <!-- Password Field -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="password" class="text-[#0d1b10] dark:text-white text-sm font-bold ml-1">Password</label>
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" aria-hidden="true">lock</span>
+                        <input 
+                            id="password"
+                            name="password"
+                            type="password" 
+                            placeholder="Enter password" 
+                            required
+                            class="w-full rounded-xl text-[#0d1b10] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-[#cfe7d3] dark:border-white/10 bg-gray-50 dark:bg-white/5 h-14 pl-12 pr-12 placeholder:text-gray-400 text-base"
+                        >
+                        <button 
+                            type="button" 
+                            id="togglePassword"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
+                            aria-label="Toggle password visibility"
+                        >
+                            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                        </button>
+                    </div>
+                    <div id="passwordError" class="text-red-500 text-sm mt-1 hidden"></div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input 
+                            id="rememberMe" 
+                            name="rememberMe" 
+                            type="checkbox" 
+                            class="rounded border-gray-300 text-primary focus:ring-primary"
+                            {% if request.POST.rememberMe %}checked{% endif %}
+                        >
+                        <label for="rememberMe" class="ml-2 text-sm text-gray-600 dark:text-gray-400">Remember me</label>
+                    </div>
+                    <a href="{% url 'forgot_password' %}" class="text-sm text-primary hover:text-green-700 font-bold transition-colors">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button 
+                        id="loginButton"
+                        type="submit"
+                        class="w-full rounded-xl h-14 px-4 bg-primary text-white text-lg font-bold hover:bg-[#1e3d1a] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    >
+                        <span id="loginText">Login</span>
+                        <div id="loginSpinner" class="hidden">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Signup Link -->
+                <div class="text-center pt-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Don't have an account? 
+                        <a href="{% url 'signup' %}" class="text-primary font-bold hover:text-green-700 transition-colors underline decoration-2 underline-offset-4">
+                            Sign up now
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for login form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+    const loginText = document.getElementById('loginText');
+    const loginSpinner = document.getElementById('loginSpinner');
+    
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('.material-symbols-outlined').textContent = 
+                type === 'password' ? 'visibility' : 'visibility_off';
+        });
+    }
+    
+    // Client-side validation
+    function validateLoginForm() {
+        let isValid = true;
+        
+        // Email validation
+        const email = document.getElementById('username').value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            showError('usernameError', 'Please enter your email address');
+            isValid = false;
+        } else if (!emailRegex.test(email)) {
+            showError('usernameError', 'Please enter a valid email address');
+            isValid = false;
+        } else {
+            hideError('usernameError');
+        }
+        
+        // Password validation
+        const password = document.getElementById('password').value;
+        if (!password) {
+            showError('passwordError', 'Please enter your password');
+            isValid = false;
+        } else {
+            hideError('passwordError');
+        }
+        
+        return isValid;
+    }
+    
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+    }
+    
+    function hideError(elementId) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.classList.add('hidden');
+        }
+    }
+    
+    // AJAX form submission for login
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateLoginForm()) {
+            return;
+        }
+        
+        // Show loading state
+        loginText.classList.add('hidden');
+        loginSpinner.classList.remove('hidden');
+        loginButton.disabled = true;
+        
+        // Get form data
+        const formData = new FormData(this);
+        
+        // Send AJAX request
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success - redirect to dashboard
+                window.location.href = data.redirect_url;
+            } else {
+                // Show errors
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        if (field === '__all__') {
+                            // General error
+                            const errorMessages = data.errors[field];
+                            if (errorMessages && errorMessages.length > 0) {
+                                showError('usernameError', errorMessages[0].message || errorMessages[0]);
+                                showError('passwordError', errorMessages[0].message || errorMessages[0]);
+                            }
+                        } else {
+                            const errorId = field + 'Error';
+                            const errorMessages = data.errors[field];
+                            if (errorMessages && errorMessages.length > 0) {
+                                showError(errorId, errorMessages[0].message || errorMessages[0]);
+                            }
+                        }
+                    });
+                } else {
+                    showError('usernameError', 'Invalid email or password');
+                    showError('passwordError', 'Invalid email or password');
+                }
+                
+                // Reset button state
+                loginText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+                loginButton.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('usernameError', 'An error occurred. Please try again.');
+            
+            // Reset button state
+            loginText.classList.remove('hidden');
+            loginSpinner.classList.add('hidden');
+            loginButton.disabled = false;
+        });
+    });
+    
+    // Clear errors on input
+    const inputs = document.querySelectorAll('#loginForm input');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const fieldName = this.name;
+            const errorId = fieldName === 'username' ? 'usernameError' : 'passwordError';
+            hideError(errorId);
+        });
+    });
+});
+</script>
+
+<style>
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+                    
                     <!-- Error Message -->
                     <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
                         <div class="flex items-center gap-3">
